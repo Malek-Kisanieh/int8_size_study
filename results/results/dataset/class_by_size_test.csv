@@ -1,0 +1,11 @@
+class_id,class_name,small,medium,large
+0,pedestrian,18848,2066,92
+1,people,6024,349,3
+2,bicycle,1066,231,5
+3,car,15112,11851,1111
+4,van,2906,2675,190
+5,truck,777,1445,437
+6,tricycle,263,249,18
+7,awning-tricycle,274,300,25
+8,bus,702,1715,523
+9,motor,4844,995,6

@@ -1,0 +1,40 @@
+2026-10-13 12:50:28,503 Ultralytics 8.4.174 🚀 Python-3.12.15 torch-2.14.1+cu130 CUDA:0 (NVIDIA GeForce RTX 5080, 16303MiB)
+2026-10-13 12:50:28,503 Loading /home/labpc/intb_size_study_new/int8_size_study/models/dev/engines/int8_seed0/model.engine for TensorRT inference...
+2026-10-13 12:50:28,615 Setting batch=1 input of shape (1, 3, 640, 640)
+2026-10-13 12:50:28,617 [34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 3359.2±1922.6 MB/s, size: 113.9 KB)
+2026-10-13 12:50:33,916                    all        548      38759      0.563      0.108     0.0799      0.039
+2026-10-13 12:50:33,916             pedestrian        520       8844      0.244      0.222      0.127      0.045
+2026-10-13 12:50:33,917                 people        482       5125      0.275     0.0956      0.069     0.0199
+2026-10-13 12:50:33,917                bicycle        364       1287          1          0   0.000164   5.96e-05
+2026-10-13 12:50:33,917                    car        515      14064      0.424      0.574      0.473      0.257
+2026-10-13 12:50:33,917                    van        421       1975     0.0738      0.083     0.0422     0.0227
+2026-10-13 12:50:33,917                  truck        266        750      0.162     0.0747     0.0321     0.0164
+2026-10-13 12:50:33,917               tricycle        337       1045          1          0    2.9e-05   8.71e-06
+2026-10-13 12:50:33,917        awning-tricycle        220        532          1          0   0.000191   9.29e-05
+2026-10-13 12:50:33,917                    bus        131        251      0.453     0.0319      0.023     0.0179
+2026-10-13 12:50:33,917                  motor        485       4886          1          0     0.0323     0.0101
+2026-10-13 12:50:33,917 Speed: 0.7ms preprocess, 0.7ms inference, 0.0ms loss, 2.1ms postprocess per image
+2026-10-13 12:50:33,918 Saving /home/labpc/intb_size_study_new/int8_size_study/results/dev/evaluation/val/int8_seed0/predictions.json...
+2026-10-13 12:50:35,408 
+Evaluating faster-coco-eval mAP...
+2026-10-13 12:50:36,309 Evaluate annotation type *bbox*
+2026-10-13 12:50:37,061 COCOeval_opt.evaluate() finished...
+2026-10-13 12:50:37,062 DONE (t=0.75s).
+2026-10-13 12:50:37,062 Accumulating evaluation results...
+2026-10-13 12:50:37,062 COCOeval_opt.accumulate() finished...
+2026-10-13 12:50:37,062 DONE (t=0.00s).
+2026-10-13 12:50:37,062  Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.040
+2026-10-13 12:50:37,062  Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.081
+2026-10-13 12:50:37,063  Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.037
+2026-10-13 12:50:37,063  Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.017
+2026-10-13 12:50:37,063  Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.068
+2026-10-13 12:50:37,063  Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.161
+2026-10-13 12:50:37,063  Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.017
+2026-10-13 12:50:37,063  Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.068
+2026-10-13 12:50:37,063  Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.122
+2026-10-13 12:50:37,063  Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.058
+2026-10-13 12:50:37,064  Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.189
+2026-10-13 12:50:37,064  Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.425
+2026-10-13 12:50:37,064  Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.229
+2026-10-13 12:50:37,064  Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.114
+2026-10-13 12:50:37,134 Results saved to [1m/home/labpc/intb_size_study_new/int8_size_study/results/dev/evaluation/val/int8_seed0[0m

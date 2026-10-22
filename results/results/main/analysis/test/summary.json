@@ -1,0 +1,39 @@
+{
+  "timestamp_utc": "2026-10-13T10:18:09Z",
+  "tag": "main",
+  "split": "test",
+  "confirmatory": true,
+  "n_images": 1610,
+  "bootstrap_reps": 2000,
+  "ci_level": 0.95,
+  "seed": 0,
+  "conditions": [
+    "fp32",
+    "fp16",
+    "int8_seed0",
+    "int8_seed1",
+    "int8_seed2"
+  ],
+  "primary": {
+    "comparison": "fp32 vs int8_seed0",
+    "metric": "AP50_95",
+    "D": 0.009580858159622202,
+    "ci_low": -0.008057977765357719,
+    "ci_high": 0.030344543539173773,
+    "decision": "inconclusive (CI contains 0) - H1 not supported"
+  },
+  "robustness": {
+    "D_point_by_seed": {
+      "int8_seed0": 0.009580858159622202,
+      "int8_seed1": 0.018344327045089426,
+      "int8_seed2": 0.011894126498300128
+    },
+    "same_sign_all_seeds": true
+  },
+  "fp16_control": {
+    "D_fp16": 0.0041889915892131535,
+    "ci_low": 0.0007245610331710931,
+    "ci_high": 0.00982967525602829,
+    "rule": "no INT8 effect to attribute"
+  }
+}

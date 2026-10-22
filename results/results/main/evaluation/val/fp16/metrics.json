@@ -1,0 +1,77 @@
+{
+  "condition": "fp16",
+  "tag": "main",
+  "split": "val",
+  "timestamp_utc": "2026-10-08T15:06:27Z",
+  "development_only": true,
+  "artefact": "/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.engine",
+  "artefact_sha256": "9098114e31ec89da1ef22395c53a997045face1991dcfceaa95a0690714eac19",
+  "pytorch_tf32": null,
+  "settings": {
+    "conf": 0.001,
+    "iou": 0.7,
+    "max_det": 500,
+    "batch": 1,
+    "rect": false,
+    "coco_max_dets": [
+      1,
+      100,
+      500
+    ],
+    "imgsz": 640
+  },
+  "predictions": {
+    "n_predictions_file": 260186,
+    "n_used": 260186,
+    "n_unknown_image": 0,
+    "n_unknown_category": 0
+  },
+  "pycocotools": {
+    "all": {
+      "AP50_95": 0.18929681829055447,
+      "AP50": 0.3345673590838754,
+      "n_gt": 38759
+    },
+    "small": {
+      "AP50_95": 0.1018422196941022,
+      "AP50": 0.228897771180208,
+      "n_gt": 26575
+    },
+    "non_small": {
+      "AP50_95": 0.30585998410572135,
+      "AP50": 0.4954947249914951,
+      "n_gt": 12184
+    },
+    "medium": {
+      "AP50_95": 0.2867064253961905,
+      "AP50": 0.47832475193399704,
+      "n_gt": 11116
+    },
+    "large": {
+      "AP50_95": 0.45305999449313006,
+      "AP50": 0.6008074457502492,
+      "n_gt": 1068
+    }
+  },
+  "own_ap_matches_pycocotools": {
+    "ok": true,
+    "max_abs_diff": 5.551115123125783e-17
+  },
+  "ultralytics": {
+    "mAP50_95": 0.18693227812412247,
+    "mAP50": 0.3326540552842212,
+    "results_dict": {
+      "metrics/precision(B)": 0.4676552838208094,
+      "metrics/recall(B)": 0.3432248858769783,
+      "metrics/mAP50(B)": 0.3326540552842212,
+      "metrics/mAP50-95(B)": 0.18693227812412247,
+      "fitness": 0.18693227812412247
+    },
+    "speed_ms_per_image": {
+      "preprocess": 0.6886899653357824,
+      "inference": 0.436195629551555,
+      "loss": 0.005106461685500108,
+      "postprocess": 1.4352257244603355
+    }
+  }
+}

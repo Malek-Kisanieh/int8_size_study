@@ -1,0 +1,341 @@
+{
+  "timestamp_utc": "2026-10-07T17:27:48Z",
+  "overall_status": "PASS",
+  "checks": [
+    {
+      "id": "C1",
+      "name": "images decode fully, sizes match, no EXIF rotation",
+      "status": "PASS",
+      "details": "all images OK"
+    },
+    {
+      "id": "C2",
+      "name": "every image has a label file and vice versa",
+      "status": "PASS",
+      "details": {
+        "train": {
+          "images_without_label": 0,
+          "labels_without_image": 0
+        },
+        "val": {
+          "images_without_label": 0,
+          "labels_without_image": 0
+        },
+        "test": {
+          "images_without_label": 0,
+          "labels_without_image": 0
+        }
+      }
+    },
+    {
+      "id": "C3",
+      "name": "all 457,065 YOLO label lines valid",
+      "status": "PASS",
+      "details": {
+        "invalid": {},
+        "duplicate_lines_per_split": {
+          "train": 4
+        }
+      }
+    },
+    {
+      "id": "C4",
+      "name": "YOLO labels and COCO ground truth contain identical boxes",
+      "status": "PASS",
+      "details": {
+        "val": {
+          "images": 548,
+          "annotations": 38759,
+          "mismatching_images": 0,
+          "examples": [],
+          "area_equals_w_times_h": true
+        },
+        "test": {
+          "images": 1610,
+          "annotations": 75102,
+          "mismatching_images": 0,
+          "examples": [],
+          "area_equals_w_times_h": true
+        }
+      }
+    },
+    {
+      "id": "C5",
+      "name": "pycocotools loads the COCO ground truth",
+      "status": "PASS",
+      "details": {
+        "val": {
+          "images": 548,
+          "annotations": 38759,
+          "category_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "test": {
+          "images": 1610,
+          "annotations": 75102,
+          "category_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "id": "C6",
+      "name": "no identical image files across splits or inside test",
+      "status": "PASS",
+      "details": {
+        "duplicate_groups_total": 3,
+        "cross_split_groups": 0,
+        "groups_inside_test": 0,
+        "all_groups": [
+          [
+            "train/0000239_06450_d_0000017.jpg",
+            "train/0000239_06950_d_0000018.jpg"
+          ],
+          [
+            "train/9999950_00000_d_0000079.jpg",
+            "train/9999950_00000_d_10000080.jpg"
+          ],
+          [
+            "val/0000022_00000_d_0000004.jpg",
+            "val/0000023_00000_d_0000008.jpg"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "C7",
+      "name": "test has >= 500 objects in each primary size bin",
+      "status": "PASS",
+      "details": {
+        "small": 50816,
+        "non_small": 24286,
+        "medium": 21876,
+        "large": 2410
+      }
+    },
+    {
+      "id": "C8",
+      "name": "max_det = 500 is sufficient for the evaluation splits (no val/test image > 500 objects)",
+      "status": "PASS",
+      "details": {
+        "train": {
+          "max_objects_in_one_image": 902,
+          "images_over_100": 703,
+          "images_over_500": 2
+        },
+        "val": {
+          "max_objects_in_one_image": 317,
+          "images_over_100": 107,
+          "images_over_500": 0
+        },
+        "test": {
+          "max_objects_in_one_image": 461,
+          "images_over_100": 127,
+          "images_over_500": 0
+        }
+      }
+    }
+  ],
+  "size_definition": {
+    "small": "area < 1024",
+    "medium": "1024 <= area < 9216",
+    "large": "area >= 9216",
+    "area": "w*h of GT box in original image pixels"
+  },
+  "size_bin_counts": [
+    {
+      "split": "train",
+      "images": 6471,
+      "objects": 343204,
+      "small": 207524,
+      "medium": 116696,
+      "large": 18984,
+      "non_small": 135680,
+      "pct_small": 60.47,
+      "pct_medium": 34.0,
+      "pct_large": 5.53
+    },
+    {
+      "split": "val",
+      "images": 548,
+      "objects": 38759,
+      "small": 26575,
+      "medium": 11116,
+      "large": 1068,
+      "non_small": 12184,
+      "pct_small": 68.56,
+      "pct_medium": 28.68,
+      "pct_large": 2.76
+    },
+    {
+      "split": "test",
+      "images": 1610,
+      "objects": 75102,
+      "small": 50816,
+      "medium": 21876,
+      "large": 2410,
+      "non_small": 24286,
+      "pct_small": 67.66,
+      "pct_medium": 29.13,
+      "pct_large": 3.21
+    }
+  ],
+  "objects_per_image": {
+    "train": {
+      "mean": 53.04,
+      "median": 42,
+      "max": 902
+    },
+    "val": {
+      "mean": 70.73,
+      "median": 65.0,
+      "max": 317
+    },
+    "test": {
+      "mean": 46.65,
+      "median": 36.0,
+      "max": 461
+    }
+  },
+  "image_sizes": {
+    "train": [
+      [
+        "1400x1050",
+        2498
+      ],
+      [
+        "1400x788",
+        1299
+      ],
+      [
+        "2000x1500",
+        772
+      ],
+      [
+        "1360x765",
+        743
+      ],
+      [
+        "1916x1078",
+        537
+      ],
+      [
+        "1920x1080",
+        339
+      ],
+      [
+        "960x540",
+        250
+      ],
+      [
+        "1398x1048",
+        30
+      ],
+      [
+        "1344x756",
+        1
+      ],
+      [
+        "1389x1042",
+        1
+      ],
+      [
+        "480x360",
+        1
+      ]
+    ],
+    "val": [
+      [
+        "1360x765",
+        408
+      ],
+      [
+        "960x540",
+        121
+      ],
+      [
+        "1920x1080",
+        19
+      ]
+    ],
+    "test": [
+      [
+        "1400x788",
+        933
+      ],
+      [
+        "1400x1050",
+        274
+      ],
+      [
+        "1360x765",
+        167
+      ],
+      [
+        "1916x1078",
+        151
+      ],
+      [
+        "960x540",
+        49
+      ],
+      [
+        "1920x1080",
+        36
+      ]
+    ]
+  },
+  "image_modes": {
+    "RGB": 8629
+  },
+  "sequence_prefixes": {
+    "per_split": {
+      "train": {
+        "images": 6471,
+        "unique_prefixes": 208,
+        "images_per_prefix_min": 1,
+        "images_per_prefix_median": 7.0,
+        "images_per_prefix_max": 434
+      },
+      "val": {
+        "images": 548,
+        "unique_prefixes": 76,
+        "images_per_prefix_min": 1,
+        "images_per_prefix_median": 4.0,
+        "images_per_prefix_max": 35
+      },
+      "test": {
+        "images": 1610,
+        "unique_prefixes": 61,
+        "images_per_prefix_min": 1,
+        "images_per_prefix_median": 5,
+        "images_per_prefix_max": 516
+      }
+    },
+    "shared_between_splits": {
+      "train&val": 24,
+      "train&test": 0,
+      "val&test": 0
+    }
+  }
+}

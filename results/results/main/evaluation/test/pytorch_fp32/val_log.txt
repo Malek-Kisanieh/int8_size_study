@@ -1,0 +1,22 @@
+2026-10-12 16:07:32,628 Ultralytics 8.4.174 🚀 Python-3.11.9 torch-2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 5080, 16303MiB)
+2026-10-12 16:07:32,673 Model summary (fused): 72 layers, 3,007,598 parameters, 0 gradients, 8.1 GFLOPs
+2026-10-12 16:07:32,802 [34m[1mval: [0mFast image access ✅ (ping: 0.4±0.3 ms, read: 388.7±98.6 MB/s, size: 239.8 KB)
+2026-10-12 16:07:34,806 [34m[1mval: [0mNew cache created: /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/test.cache
+2026-10-12 16:07:54,939                    all       1610      75102       0.41        0.3      0.274      0.151
+2026-10-12 16:07:54,940             pedestrian       1197      21006       0.42      0.247      0.221     0.0824
+2026-10-12 16:07:54,940                 people        797       6376      0.456      0.111      0.121      0.039
+2026-10-12 16:07:54,940                bicycle        377       1302      0.274     0.0829     0.0698     0.0275
+2026-10-12 16:07:54,940                    car       1530      28074      0.594      0.705      0.672      0.408
+2026-10-12 16:07:54,941                    van       1168       5771      0.379      0.339      0.301      0.188
+2026-10-12 16:07:54,941                  truck        750       2659      0.404      0.376      0.332      0.205
+2026-10-12 16:07:54,941               tricycle        245        530      0.246      0.209      0.142     0.0732
+2026-10-12 16:07:54,941        awning-tricycle        233        599      0.343      0.154      0.148     0.0789
+2026-10-12 16:07:54,941                    bus        838       2940      0.603      0.488      0.492      0.326
+2026-10-12 16:07:54,941                  motor        794       5845      0.383      0.292      0.236      0.087
+2026-10-12 16:07:54,941 Speed: 0.7ms preprocess, 3.0ms inference, 0.0ms loss, 1.2ms postprocess per image
+2026-10-12 16:07:54,941 Saving /home/labpc/intb_size_study_new/int8_size_study/results/main/evaluation/test/pytorch_fp32/predictions.json...
+2026-10-12 16:08:01,132 
+Evaluating faster-coco-eval mAP...
+2026-10-12 16:08:01,133 WARNING ⚠️ [31m[1mrequirements:[0m Ultralytics requirement ['faster-coco-eval>=1.6.7'] not found, AutoUpdate disabled by YOLO_AUTOINSTALL=False
+2026-10-12 16:08:01,133 WARNING ⚠️ faster-coco-eval unable to run: No module named 'faster_coco_eval'
+2026-10-12 16:08:01,220 Results saved to [1m/home/labpc/intb_size_study_new/int8_size_study/results/main/evaluation/test/pytorch_fp32[0m

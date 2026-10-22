@@ -1,0 +1,84 @@
+{
+  "timestamp_utc": "2026-10-07T17:22:20Z",
+  "dataset": "VisDrone2019-DET",
+  "conversion_policy": {
+    "skip_score_zero": true,
+    "skip_categories": [
+      0,
+      11
+    ],
+    "clip_boxes_to_image": true,
+    "min_box_side_px": 1
+  },
+  "splits": {
+    "train": {
+      "archive": {
+        "url": "https://github.com/ultralytics/assets/releases/download/v0.0.0/VisDrone2019-DET-train.zip",
+        "path": "/home/labpc/intb_size_study_new/int8_size_study/data/raw/VisDrone2019-DET-train.zip",
+        "size_bytes": 1549875511,
+        "sha256": "86a77eba93137bfc16e4993860de9245b0675c0dba0d3ab98fb458699e256f84",
+        "sha256_verified": true,
+        "downloaded_now": true
+      },
+      "counts": {
+        "annotation_files": 6471,
+        "annotation_files_without_image": 0,
+        "boxes_dropped_degenerate": 1,
+        "images": 6471,
+        "images_without_annotation_file": 0,
+        "objects_kept": 343204,
+        "rows_total": 353550,
+        "skipped_score0_ignored_region": 8813,
+        "skipped_score0_others": 1532
+      },
+      "seconds": 82.1
+    },
+    "val": {
+      "archive": {
+        "url": "https://github.com/ultralytics/assets/releases/download/v0.0.0/VisDrone2019-DET-val.zip",
+        "path": "/home/labpc/intb_size_study_new/int8_size_study/data/raw/VisDrone2019-DET-val.zip",
+        "size_bytes": 81638851,
+        "sha256": "abeea063037e5d20398837deb11084e652402a34ddf4f207bdf541a6f2a35ef9",
+        "sha256_verified": true,
+        "downloaded_now": true
+      },
+      "counts": {
+        "annotation_files": 548,
+        "annotation_files_without_image": 0,
+        "images": 548,
+        "images_without_annotation_file": 0,
+        "objects_kept": 38759,
+        "rows_total": 40169,
+        "skipped_score0_ignored_region": 1378,
+        "skipped_score0_others": 32
+      },
+      "seconds": 3.6
+    },
+    "test": {
+      "archive": {
+        "url": "https://github.com/ultralytics/assets/releases/download/v0.0.0/VisDrone2019-DET-test-dev.zip",
+        "path": "/home/labpc/intb_size_study_new/int8_size_study/data/raw/VisDrone2019-DET-test-dev.zip",
+        "size_bytes": 311251787,
+        "sha256": "b28a94b06dfd9e36ce77ff8155fb82b9d2c030f198a76105933bd56c6ea6a68d",
+        "sha256_verified": true,
+        "downloaded_now": true
+      },
+      "counts": {
+        "annotation_files": 1610,
+        "annotation_files_without_image": 0,
+        "images": 1610,
+        "images_without_annotation_file": 0,
+        "objects_kept": 75102,
+        "rows_total": 77547,
+        "skipped_score0_ignored_region": 2180,
+        "skipped_score0_others": 265
+      },
+      "seconds": 16.2
+    }
+  },
+  "outputs": {
+    "dataset_yaml": "/home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/visdrone.yaml",
+    "images_table": "/home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/annotations/images.csv",
+    "objects_table": "/home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/annotations/objects.csv"
+  }
+}

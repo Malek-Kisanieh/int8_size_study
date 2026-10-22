@@ -1,0 +1,781 @@
+
+======================================================================================
+  Stage 5: engines (tag=main, TensorRT 11.3.0.99: explicit Q/DQ via NVIDIA ModelOpt)
+======================================================================================
+
+--> fp32
+Ultralytics 8.4.174 🚀 Python-3.11.9 torch-2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 5080, 16303MiB)
+Model summary (fused): 72 layers, 3,007,598 parameters, 0 gradients, 8.1 GFLOPs
+
+[34m[1mPyTorch:[0m starting from '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.pt' with input shape (1, 3, 640, 640) BCHW and output shape(s) (1, 14, 8400) (6.0 MB)
+
+[34m[1mONNX:[0m starting export with onnx 1.21.0 opset 18...
+[34m[1mONNX:[0m slimming with onnxslim 0.1.97...
+[34m[1mONNX:[0m export success ✅ 1.4s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.onnx' (11.7 MB)
+
+[34m[1mTensorRT:[0m starting export with TensorRT 11.3.0.99...
+[10/08/2026-16:55:07] [TRT] [I] [MemUsageChange] Init CUDA: CPU -2, GPU +0, now: CPU 865, GPU 1477 (MiB)
+[10/08/2026-16:55:08] [TRT] [I] ----------------------------------------------------------------
+[10/08/2026-16:55:08] [TRT] [I] Input filename:   /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.onnx
+[10/08/2026-16:55:08] [TRT] [I] ONNX IR version:  0.0.8
+[10/08/2026-16:55:08] [TRT] [I] Opset version:    18
+[10/08/2026-16:55:08] [TRT] [I] Producer name:    pytorch
+[10/08/2026-16:55:08] [TRT] [I] Producer version: 2.10.0
+[10/08/2026-16:55:08] [TRT] [I] Domain:           
+[10/08/2026-16:55:08] [TRT] [I] Model version:    0
+[10/08/2026-16:55:08] [TRT] [I] Doc string:       
+[10/08/2026-16:55:08] [TRT] [I] ----------------------------------------------------------------
+[34m[1mTensorRT:[0m input "images" with shape(1, 3, 640, 640) DataType.FLOAT
+[34m[1mTensorRT:[0m output "output0" with shape(1, 14, 8400) DataType.FLOAT
+[34m[1mTensorRT:[0m building FP32 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.engine
+[10/08/2026-16:55:08] [TRT] [I] [MemUsageChange] Init builder kernel library: CPU +399, GPU +0, now: CPU 1474, GPU 1477 (MiB)
+[10/08/2026-16:55:08] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.
+[10/08/2026-16:55:08] [TRT] [I] Compiler backend is used during engine build.
+[10/08/2026-16:55:20] [TRT] [I] Detected 1 inputs and 1 output network tensors.
+[10/08/2026-16:55:20] [TRT] [I] Total Host Persistent Memory: 80 bytes
+[10/08/2026-16:55:20] [TRT] [I] Total Device Persistent Memory: 0 bytes
+[10/08/2026-16:55:20] [TRT] [I] Max Scratch Memory: 29083648 bytes
+[10/08/2026-16:55:20] [TRT] [I] [BlockAssignment] Started assigning block shifts. This will take 1 steps to complete.
+[10/08/2026-16:55:20] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 0.006257ms to assign 1 blocks to 1 nodes requiring 29083648 bytes.
+[10/08/2026-16:55:20] [TRT] [I] Total Activation Memory: 29083648 bytes
+[10/08/2026-16:55:20] [TRT] [I] Total Weights Memory: 13771648 bytes
+[10/08/2026-16:55:20] [TRT] [I] Compiler backend is used during engine execution.
+[10/08/2026-16:55:20] [TRT] [I] Engine generation completed in 11.6335 seconds.
+[10/08/2026-16:55:20] [TRT] [I] [MemUsageStats] Peak memory usage of TRT CPU/GPU memory allocators: CPU 0 MiB, GPU 14 MiB
+[34m[1mTensorRT:[0m export success ✅ 14.9s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.engine' (14.0 MB)
+
+Export complete (16.1s)
+Results saved to [1m/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.engine[0m
+Predict:         yolo predict task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.engine imgsz=640 
+Validate:        yolo val task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.engine imgsz=640 data=/home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/visdrone.yaml  
+Visualize:       https://netron.app
+    OK: /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.engine (16.2 s)
+      log: building FP32 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.engine
+      log: starting export with TensorRT 11.3.0.99...
+
+--> fp16
+Ultralytics 8.4.174 🚀 Python-3.11.9 torch-2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 5080, 16303MiB)
+Model summary (fused): 72 layers, 3,007,598 parameters, 0 gradients, 8.1 GFLOPs
+
+[34m[1mPyTorch:[0m starting from '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.pt' with input shape (1, 3, 640, 640) BCHW and output shape(s) (1, 14, 8400) (6.0 MB)
+
+[34m[1mONNX:[0m starting export with onnx 1.21.0 opset 18...
+[34m[1mONNX:[0m slimming with onnxslim 0.1.97...
+[34m[1mONNX:[0m export success ✅ 0.8s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.onnx' (11.7 MB)
+
+[34m[1mTensorRT:[0m starting export with TensorRT 11.3.0.99...
+[34m[1mTensorRT:[0m converting ONNX to FP16 mixed precision with ModelOpt AutoCast...
+2026-10-08 16:55:22,970 - [modelopt][onnx] - WARNING - Shared constants were detected and duplicated accordingly.
+2026-10-08 16:55:23,096 - [modelopt][onnx] - INFO - Successfully enabled 1 EPs for ORT: ['CPUExecutionProvider']
+2026-10-08 16:55:23,345 - [modelopt][onnx] - INFO - Running ONNX Runtime to obtain reference outputs (this may take a while)...
+2026-10-08 16:55:23,581 - [modelopt][onnx] - INFO - Skipping node /model.22/Mul_2: reference IO out of range: min=-12.69223690032959, max=638.0970458984375, absmax=638.0970458984375, range=[-512, 512]
+2026-10-08 16:55:23,581 - [modelopt][onnx] - INFO - Skipping node /model.22/Concat_3: reference IO out of range: min=-12.69223690032959, max=638.0970458984375, absmax=638.0970458984375, range=[-512, 512]
+2026-10-08 16:55:23,596 - [modelopt][onnx] - WARNING - Did not find  in value info map! Assuming not castable
+2026-10-08 16:55:24,081 - [modelopt][onnx] - INFO - Converted 231/233 nodes (99.14%) to fp16
+[10/08/2026-16:55:24] [TRT] [I] ----------------------------------------------------------------
+[10/08/2026-16:55:24] [TRT] [I] Input filename:   /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.fp16.onnx
+[10/08/2026-16:55:24] [TRT] [I] ONNX IR version:  0.0.8
+[10/08/2026-16:55:24] [TRT] [I] Opset version:    18
+[10/08/2026-16:55:24] [TRT] [I] Producer name:    pytorch
+[10/08/2026-16:55:24] [TRT] [I] Producer version: 2.10.0
+[10/08/2026-16:55:24] [TRT] [I] Domain:           
+[10/08/2026-16:55:24] [TRT] [I] Model version:    0
+[10/08/2026-16:55:24] [TRT] [I] Doc string:       
+[10/08/2026-16:55:24] [TRT] [I] ----------------------------------------------------------------
+[34m[1mTensorRT:[0m input "images" with shape(1, 3, 640, 640) DataType.FLOAT
+[34m[1mTensorRT:[0m output "output0" with shape(1, 14, 8400) DataType.FLOAT
+[34m[1mTensorRT:[0m building FP16 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.engine
+[10/08/2026-16:55:24] [TRT] [I] [MemUsageChange] Init builder kernel library: CPU -411, GPU +0, now: CPU 4158, GPU 1481 (MiB)
+[10/08/2026-16:55:24] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.
+[10/08/2026-16:55:24] [TRT] [I] Compiler backend is used during engine build.
+[10/08/2026-16:55:35] [TRT] [I] Detected 1 inputs and 1 output network tensors.
+[10/08/2026-16:55:35] [TRT] [I] Total Host Persistent Memory: 80 bytes
+[10/08/2026-16:55:35] [TRT] [I] Total Device Persistent Memory: 0 bytes
+[10/08/2026-16:55:35] [TRT] [I] Max Scratch Memory: 14542848 bytes
+[10/08/2026-16:55:35] [TRT] [I] [BlockAssignment] Started assigning block shifts. This will take 1 steps to complete.
+[10/08/2026-16:55:35] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 0.00627ms to assign 1 blocks to 1 nodes requiring 14542848 bytes.
+[10/08/2026-16:55:35] [TRT] [I] Total Activation Memory: 14542848 bytes
+[10/08/2026-16:55:35] [TRT] [I] Total Weights Memory: 6905984 bytes
+[10/08/2026-16:55:35] [TRT] [I] Compiler backend is used during engine execution.
+[10/08/2026-16:55:35] [TRT] [I] Engine generation completed in 11.0134 seconds.
+[10/08/2026-16:55:35] [TRT] [I] [MemUsageStats] Peak memory usage of TRT CPU/GPU memory allocators: CPU 0 MiB, GPU 14 MiB
+[34m[1mTensorRT:[0m export success ✅ 15.9s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.engine' (7.8 MB)
+
+Export complete (14.3s)
+Results saved to [1m/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.engine[0m
+Predict:         yolo predict task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.engine imgsz=640 quantize=16
+Validate:        yolo val task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.engine imgsz=640 data=/home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/visdrone.yaml quantize=16 
+Visualize:       https://netron.app
+    OK: /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.engine (14.4 s)
+      log: building FP16 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp16/model.engine
+      log: starting export with TensorRT 11.3.0.99...
+
+--> int8_seed0
+    calibration seed 0: 512 images, 27036 objects (59.78% small)
+Ultralytics 8.4.174 🚀 Python-3.11.9 torch-2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 5080, 16303MiB)
+Model summary (fused): 72 layers, 3,007,598 parameters, 0 gradients, 8.1 GFLOPs
+
+[34m[1mPyTorch:[0m starting from '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.pt' with input shape (1, 3, 640, 640) BCHW and output shape(s) (1, 14, 8400) (6.0 MB)
+
+[34m[1mONNX:[0m starting export with onnx 1.21.0 opset 18...
+[34m[1mONNX:[0m slimming with onnxslim 0.1.97...
+[34m[1mONNX:[0m export success ✅ 0.6s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.onnx' (11.7 MB)
+[34m[1mTensorRT:[0m collecting INT8 calibration images from 'data=/home/labpc/intb_size_study_new/int8_size_study/results/main/calibration/calib_seed0.yaml'
+[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 473.0±248.3 MB/s, size: 237.3 KB)
+[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 70 images, 0 backgrounds, 0 corrupt: 13% ━╸────────── 70/512 208.0it/s 0.1s<2.1s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 152 images, 0 backgrounds, 0 corrupt: 29% ━━━╸──────── 152/512 382.8it/s 0.2s<0.9s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 238 images, 0 backgrounds, 0 corrupt: 46% ━━━━━╸────── 238/512 521.5it/s 0.3s<0.5s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 318 images, 0 backgrounds, 0 corrupt: 62% ━━━━━━━───── 318/512 601.2it/s 0.4s<0.3s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 398 images, 0 backgrounds, 0 corrupt: 77% ━━━━━━━━━─── 398/512 660.8it/s 0.5s<0.2s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 477 images, 0 backgrounds, 0 corrupt: 93% ━━━━━━━━━━━─ 477/512 694.8it/s 0.6s<0.1s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 512 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 512/512 792.5it/s 0.6s
+[34m[1mval: [0mNew cache created: /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train.cache
+
+[34m[1mTensorRT:[0m starting export with TensorRT 11.3.0.99...
+[34m[1mTensorRT:[0m quantizing ONNX to INT8 with ModelOpt using 512 calibration images...
+2026-10-08 16:55:44,897 - [modelopt][onnx] - INFO - Starting quantization process for model: /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.onnx
+2026-10-08 16:55:44,897 - [modelopt][onnx] - INFO - Quantization mode: int8
+2026-10-08 16:55:44,897 - [modelopt][onnx] - INFO - Preprocessing the model /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.onnx
+[10/08/2026-16:55:45] [TRT] [W] WARNING The logger passed into createInferBuilder differs from one already registered for an existing builder, runtime, or refitter. So the current new logger is ignored, and TensorRT will use the existing one which is returned by nvinfer1::getLogger() instead.
+2026-10-08 16:55:45,158 - [modelopt][onnx] - INFO - Found 0 custom layers and 300 tensors
+2026-10-08 16:55:45,246 - [modelopt][onnx] - INFO - No custom ops found. If that's not correct, please make sure that the 'tensorrt' python package is correctly installed and that the paths to 'libcudnn*.so' and TensorRT 'lib/' are in 'LD_LIBRARY_PATH'. If the custom op is not directly available as a plugin in TensorRT, please also make sure that the path to the compiled '.so' TensorRT plugin is also being given via the  '--trt_plugins' flag (requires TRT 10+).
+2026-10-08 16:55:45,301 - [modelopt][onnx] - INFO - Model is cloned to /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model_opset19.onnx with opset_version 19
+2026-10-08 16:55:45,310 - [modelopt][onnx] - INFO - Duplicating shared constants
+2026-10-08 16:55:45,333 - [modelopt][onnx] - INFO - Model is cloned to /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model_named.onnx after naming the nodes
+2026-10-08 16:55:45,333 - [modelopt][onnx] - INFO - Setting up CalibrationDataProvider for calibration
+2026-10-08 16:55:45,339 - [modelopt][onnx] - INFO - Analyzing MHA nodes for int8 quantization
+2026-10-08 16:55:45,349 - [modelopt][onnx] - INFO - No MHA partitions found in the model
+2026-10-08 16:55:45,350 - [modelopt][onnx] - INFO - Starting INT8 quantization with method: max
+2026-10-08 16:55:45,363 - [modelopt][onnx] - INFO - Detecting GEMV patterns for TRT optimization
+2026-10-08 16:55:45,373 - [modelopt][onnx] - INFO - Scanning for unsupported Conv nodes for quantization
+2026-10-08 16:55:45,373 - [modelopt][onnx] - INFO - Found 0 unsupported Conv nodes for quantization
+2026-10-08 16:55:45,374 - [modelopt][onnx] - INFO - Configuring ORT for ModelOpt ONNX quantization
+2026-10-08 16:55:45,374 - [modelopt][onnx] - INFO - Successfully enabled 1 EPs for ORT: ['CPUExecutionProvider']
+2026-10-08 16:55:45,374 - [modelopt][onnx] - INFO - Quantizable op types: ['Mul', 'MaxPool', 'Resize', 'Conv', 'Add']
+2026-10-08 16:55:45,374 - [modelopt][onnx] - INFO - Finding nodes to quantize
+2026-10-08 16:55:45,374 - [modelopt][onnx] - INFO - Building non-residual Add input map
+2026-10-08 16:55:45,375 - [modelopt][onnx] - INFO - Searching for patterns like MHA, LayerNorm, etc
+2026-10-08 16:55:45,375 - [modelopt][onnx] - INFO - Found 0 layer norm partitions
+2026-10-08 16:55:45,375 - [modelopt][onnx] - INFO - Found 0 MHA (QK_AV) Patterns
+2026-10-08 16:55:45,375 - [modelopt][onnx] - INFO - Found 1 non-quantizable partitions
+2026-10-08 16:55:45,375 - [modelopt][onnx] - INFO - Building KGEN/CASK targeted partitions
+2026-10-08 16:55:45,376 - [modelopt][onnx] - INFO - Classifying partition nodes
+2026-10-08 16:55:45,376 - [modelopt][onnx] - INFO - Found 0 Conv->LayerNorm patterns to quantize
+2026-10-08 16:55:45,377 - [modelopt][onnx] - INFO - Found 57 quantizable partition nodes and 10 quantizable KGEN heads
+2026-10-08 16:55:45,377 - [modelopt][onnx] - INFO - Finding quantizable nodes. Initial nodes to quantize: 74
+2026-10-08 16:55:45,377 - [modelopt][onnx] - INFO - Found 3 pooling/window ops
+2026-10-08 16:55:45,377 - [modelopt][onnx] - INFO - Total number of quantizable nodes: 79
+2026-10-08 16:55:45,377 - [modelopt][onnx] - INFO - Final number of nodes to quantize: 72
+2026-10-08 16:55:45,377 - [modelopt][onnx] - INFO - Finding concat eliminated tensors
+2026-10-08 16:55:45,385 - [modelopt][onnx] - INFO - Starting static quantization
+2026-10-08 16:56:09,402 - [modelopt][onnx] - INFO - Starting post-processing of quantized model
+2026-10-08 16:56:09,424 - [modelopt][onnx] - INFO - Deleting QDQ nodes from marked inputs to make certain operations fusible
+2026-10-08 16:56:09,441 - [modelopt][onnx] - INFO - Converting float tensors to fp16
+2026-10-08 16:56:09,528 - [modelopt][onnx] - WARNING - Found QuantizeLinear/DequantizeLinear nodes. Updating minimum opset from 13 to 19.
+2026-10-08 16:56:09,533 - [modelopt][onnx] - WARNING - Shared constants were detected and duplicated accordingly.
+2026-10-08 16:56:09,592 - [modelopt][onnx] - WARNING - Did not find  in value info map! Assuming not castable
+2026-10-08 16:56:10,918 - [modelopt][onnx] - INFO - Quantization completed successfully in 25.568597316741943 seconds
+2026-10-08 16:56:10,947 - [modelopt][onnx] - INFO - Total number of nodes: 475
+2026-10-08 16:56:10,947 - [modelopt][onnx] - INFO - Total number of quantized nodes: 81
+2026-10-08 16:56:10,954 - [modelopt][onnx] - INFO - Quantized onnx model is saved as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.int8.onnx
+2026-10-08 16:56:10,954 - [modelopt][onnx] - INFO - Cleaning up intermediate files
+2026-10-08 16:56:10,956 - [modelopt][onnx] - INFO - Validating quantized model
+2026-10-08 16:56:11,010 - [modelopt][onnx] - INFO - Quantization process completed
+[10/08/2026-16:56:11] [TRT] [I] ----------------------------------------------------------------
+[10/08/2026-16:56:11] [TRT] [I] Input filename:   /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.int8.onnx
+[10/08/2026-16:56:11] [TRT] [I] ONNX IR version:  0.0.10
+[10/08/2026-16:56:11] [TRT] [I] Opset version:    19
+[10/08/2026-16:56:11] [TRT] [I] Producer name:    onnx.quantize
+[10/08/2026-16:56:11] [TRT] [I] Producer version: 0.1.0
+[10/08/2026-16:56:11] [TRT] [I] Domain:           
+[10/08/2026-16:56:11] [TRT] [I] Model version:    0
+[10/08/2026-16:56:11] [TRT] [I] Doc string:       
+[10/08/2026-16:56:11] [TRT] [I] ----------------------------------------------------------------
+[34m[1mTensorRT:[0m input "images" with shape(1, 3, 640, 640) DataType.FLOAT
+[34m[1mTensorRT:[0m output "output0" with shape(1, 14, 8400) DataType.FLOAT
+[34m[1mTensorRT:[0m building INT8 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.engine
+[10/08/2026-16:56:11] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.
+[10/08/2026-16:56:11] [TRT] [I] Compiler backend is used during engine build.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:56:23] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:56:23] [TRT] [I] Detected 1 inputs and 1 output network tensors.
+[10/08/2026-16:56:23] [TRT] [I] Total Host Persistent Memory: 80 bytes
+[10/08/2026-16:56:23] [TRT] [I] Total Device Persistent Memory: 0 bytes
+[10/08/2026-16:56:23] [TRT] [I] Max Scratch Memory: 40706048 bytes
+[10/08/2026-16:56:23] [TRT] [I] [BlockAssignment] Started assigning block shifts. This will take 1 steps to complete.
+[10/08/2026-16:56:23] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 0.006263ms to assign 1 blocks to 1 nodes requiring 40706048 bytes.
+[10/08/2026-16:56:23] [TRT] [I] Total Activation Memory: 40706048 bytes
+[10/08/2026-16:56:23] [TRT] [I] Total Weights Memory: 27318148 bytes
+[10/08/2026-16:56:23] [TRT] [I] Compiler backend is used during engine execution.
+[10/08/2026-16:56:23] [TRT] [I] Engine generation completed in 12.5372 seconds.
+[10/08/2026-16:56:23] [TRT] [I] [MemUsageStats] Peak memory usage of TRT CPU/GPU memory allocators: CPU 0 MiB, GPU 50 MiB
+[34m[1mTensorRT:[0m export success ✅ 49.0s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.engine' (27.8 MB)
+
+Export complete (47.4s)
+Results saved to [1m/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.engine[0m
+Predict:         yolo predict task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.engine imgsz=640 
+Validate:        yolo val task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.engine imgsz=640 data=/home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/visdrone.yaml  
+Visualize:       https://netron.app
+    OK: /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.engine (47.4 s)
+      log: 2026-10-08 16:55:37,219 [34m[1mTensorRT:[0m collecting INT8 calibration images from 'data=/home/labpc/intb_size_study_new/int8_size_study/results/main/calibration/calib_seed0.yaml'
+      log: 2026-10-08 16:55:44,896 [34m[1mTensorRT:[0m quantizing ONNX to INT8 with ModelOpt using 512 calibration images...
+      log: building INT8 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed0/model.engine
+      log: collecting INT8 calibration images from 'data=/home/labpc/intb_size_study_new/int8_size_study/results/main/calibration/calib_seed0.yaml'
+      log: quantizing ONNX to INT8 with ModelOpt using 512 calibration images...
+      log: starting export with TensorRT 11.3.0.99...
+
+--> int8_seed1
+    calibration seed 1: 512 images, 28295 objects (60.84% small)
+Ultralytics 8.4.174 🚀 Python-3.11.9 torch-2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 5080, 16303MiB)
+Model summary (fused): 72 layers, 3,007,598 parameters, 0 gradients, 8.1 GFLOPs
+
+[34m[1mPyTorch:[0m starting from '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.pt' with input shape (1, 3, 640, 640) BCHW and output shape(s) (1, 14, 8400) (6.0 MB)
+
+[34m[1mONNX:[0m starting export with onnx 1.21.0 opset 18...
+[34m[1mONNX:[0m slimming with onnxslim 0.1.97...
+[34m[1mONNX:[0m export success ✅ 0.8s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.onnx' (11.7 MB)
+[34m[1mTensorRT:[0m collecting INT8 calibration images from 'data=/home/labpc/intb_size_study_new/int8_size_study/results/main/calibration/calib_seed1.yaml'
+[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 326.9±135.5 MB/s, size: 221.9 KB)
+[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 75 images, 0 backgrounds, 0 corrupt: 14% ━╸────────── 75/512 222.8it/s 0.1s<2.0s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 152 images, 0 backgrounds, 0 corrupt: 29% ━━━╸──────── 152/512 383.0it/s 0.2s<0.9s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 240 images, 0 backgrounds, 0 corrupt: 46% ━━━━━╸────── 240/512 525.6it/s 0.3s<0.5s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 322 images, 0 backgrounds, 0 corrupt: 62% ━━━━━━━╸──── 322/512 608.7it/s 0.4s<0.3s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 512 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 512/512 608.7it/s -1.1s
+[34m[1mval: [0mNew cache created: /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train.cache
+
+[34m[1mTensorRT:[0m starting export with TensorRT 11.3.0.99...
+[34m[1mTensorRT:[0m quantizing ONNX to INT8 with ModelOpt using 512 calibration images...
+2026-10-08 16:56:31,235 - [modelopt][onnx] - INFO - Starting quantization process for model: /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.onnx
+2026-10-08 16:56:31,235 - [modelopt][onnx] - INFO - Quantization mode: int8
+2026-10-08 16:56:31,235 - [modelopt][onnx] - INFO - Preprocessing the model /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.onnx
+[10/08/2026-16:56:31] [TRT] [W] WARNING The logger passed into createInferBuilder differs from one already registered for an existing builder, runtime, or refitter. So the current new logger is ignored, and TensorRT will use the existing one which is returned by nvinfer1::getLogger() instead.
+2026-10-08 16:56:31,426 - [modelopt][onnx] - INFO - Found 0 custom layers and 300 tensors
+2026-10-08 16:56:31,542 - [modelopt][onnx] - INFO - No custom ops found. If that's not correct, please make sure that the 'tensorrt' python package is correctly installed and that the paths to 'libcudnn*.so' and TensorRT 'lib/' are in 'LD_LIBRARY_PATH'. If the custom op is not directly available as a plugin in TensorRT, please also make sure that the path to the compiled '.so' TensorRT plugin is also being given via the  '--trt_plugins' flag (requires TRT 10+).
+2026-10-08 16:56:31,594 - [modelopt][onnx] - INFO - Model is cloned to /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model_opset19.onnx with opset_version 19
+2026-10-08 16:56:31,602 - [modelopt][onnx] - INFO - Duplicating shared constants
+2026-10-08 16:56:31,630 - [modelopt][onnx] - INFO - Model is cloned to /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model_named.onnx after naming the nodes
+2026-10-08 16:56:31,630 - [modelopt][onnx] - INFO - Setting up CalibrationDataProvider for calibration
+2026-10-08 16:56:31,634 - [modelopt][onnx] - INFO - Analyzing MHA nodes for int8 quantization
+2026-10-08 16:56:31,644 - [modelopt][onnx] - INFO - No MHA partitions found in the model
+2026-10-08 16:56:31,644 - [modelopt][onnx] - INFO - Starting INT8 quantization with method: max
+2026-10-08 16:56:31,657 - [modelopt][onnx] - INFO - Detecting GEMV patterns for TRT optimization
+2026-10-08 16:56:31,677 - [modelopt][onnx] - INFO - Scanning for unsupported Conv nodes for quantization
+2026-10-08 16:56:31,677 - [modelopt][onnx] - INFO - Found 0 unsupported Conv nodes for quantization
+2026-10-08 16:56:31,678 - [modelopt][onnx] - INFO - Configuring ORT for ModelOpt ONNX quantization
+2026-10-08 16:56:31,678 - [modelopt][onnx] - INFO - Successfully enabled 1 EPs for ORT: ['CPUExecutionProvider']
+2026-10-08 16:56:31,678 - [modelopt][onnx] - INFO - Quantizable op types: ['Mul', 'MaxPool', 'Resize', 'Conv', 'Add']
+2026-10-08 16:56:31,678 - [modelopt][onnx] - INFO - Finding nodes to quantize
+2026-10-08 16:56:31,678 - [modelopt][onnx] - INFO - Building non-residual Add input map
+2026-10-08 16:56:31,679 - [modelopt][onnx] - INFO - Searching for patterns like MHA, LayerNorm, etc
+2026-10-08 16:56:31,679 - [modelopt][onnx] - INFO - Found 0 layer norm partitions
+2026-10-08 16:56:31,679 - [modelopt][onnx] - INFO - Found 0 MHA (QK_AV) Patterns
+2026-10-08 16:56:31,679 - [modelopt][onnx] - INFO - Found 1 non-quantizable partitions
+2026-10-08 16:56:31,679 - [modelopt][onnx] - INFO - Building KGEN/CASK targeted partitions
+2026-10-08 16:56:31,680 - [modelopt][onnx] - INFO - Classifying partition nodes
+2026-10-08 16:56:31,680 - [modelopt][onnx] - INFO - Found 0 Conv->LayerNorm patterns to quantize
+2026-10-08 16:56:31,680 - [modelopt][onnx] - INFO - Found 57 quantizable partition nodes and 10 quantizable KGEN heads
+2026-10-08 16:56:31,680 - [modelopt][onnx] - INFO - Finding quantizable nodes. Initial nodes to quantize: 74
+2026-10-08 16:56:31,681 - [modelopt][onnx] - INFO - Found 3 pooling/window ops
+2026-10-08 16:56:31,681 - [modelopt][onnx] - INFO - Total number of quantizable nodes: 79
+2026-10-08 16:56:31,681 - [modelopt][onnx] - INFO - Final number of nodes to quantize: 72
+2026-10-08 16:56:31,681 - [modelopt][onnx] - INFO - Finding concat eliminated tensors
+2026-10-08 16:56:31,689 - [modelopt][onnx] - INFO - Starting static quantization
+2026-10-08 16:56:56,308 - [modelopt][onnx] - INFO - Starting post-processing of quantized model
+2026-10-08 16:56:56,326 - [modelopt][onnx] - INFO - Deleting QDQ nodes from marked inputs to make certain operations fusible
+2026-10-08 16:56:56,347 - [modelopt][onnx] - INFO - Converting float tensors to fp16
+2026-10-08 16:56:56,406 - [modelopt][onnx] - WARNING - Found QuantizeLinear/DequantizeLinear nodes. Updating minimum opset from 13 to 19.
+2026-10-08 16:56:56,416 - [modelopt][onnx] - WARNING - Shared constants were detected and duplicated accordingly.
+2026-10-08 16:56:56,487 - [modelopt][onnx] - WARNING - Did not find  in value info map! Assuming not castable
+2026-10-08 16:56:57,816 - [modelopt][onnx] - INFO - Quantization completed successfully in 26.171420574188232 seconds
+2026-10-08 16:56:57,975 - [modelopt][onnx] - INFO - Total number of nodes: 475
+2026-10-08 16:56:57,975 - [modelopt][onnx] - INFO - Total number of quantized nodes: 81
+2026-10-08 16:56:57,990 - [modelopt][onnx] - INFO - Quantized onnx model is saved as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.int8.onnx
+2026-10-08 16:56:57,990 - [modelopt][onnx] - INFO - Cleaning up intermediate files
+2026-10-08 16:56:57,992 - [modelopt][onnx] - INFO - Validating quantized model
+2026-10-08 16:56:58,048 - [modelopt][onnx] - INFO - Quantization process completed
+[10/08/2026-16:56:58] [TRT] [I] ----------------------------------------------------------------
+[10/08/2026-16:56:58] [TRT] [I] Input filename:   /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.int8.onnx
+[10/08/2026-16:56:58] [TRT] [I] ONNX IR version:  0.0.10
+[10/08/2026-16:56:58] [TRT] [I] Opset version:    19
+[10/08/2026-16:56:58] [TRT] [I] Producer name:    onnx.quantize
+[10/08/2026-16:56:58] [TRT] [I] Producer version: 0.1.0
+[10/08/2026-16:56:58] [TRT] [I] Domain:           
+[10/08/2026-16:56:58] [TRT] [I] Model version:    0
+[10/08/2026-16:56:58] [TRT] [I] Doc string:       
+[10/08/2026-16:56:58] [TRT] [I] ----------------------------------------------------------------
+[34m[1mTensorRT:[0m input "images" with shape(1, 3, 640, 640) DataType.FLOAT
+[34m[1mTensorRT:[0m output "output0" with shape(1, 14, 8400) DataType.FLOAT
+[34m[1mTensorRT:[0m building INT8 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.engine
+[10/08/2026-16:56:58] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.
+[10/08/2026-16:56:58] [TRT] [I] Compiler backend is used during engine build.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:09] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:09] [TRT] [I] Detected 1 inputs and 1 output network tensors.
+[10/08/2026-16:57:09] [TRT] [I] Total Host Persistent Memory: 80 bytes
+[10/08/2026-16:57:09] [TRT] [I] Total Device Persistent Memory: 0 bytes
+[10/08/2026-16:57:09] [TRT] [I] Max Scratch Memory: 40706048 bytes
+[10/08/2026-16:57:09] [TRT] [I] [BlockAssignment] Started assigning block shifts. This will take 1 steps to complete.
+[10/08/2026-16:57:09] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 0.006371ms to assign 1 blocks to 1 nodes requiring 40706048 bytes.
+[10/08/2026-16:57:09] [TRT] [I] Total Activation Memory: 40706048 bytes
+[10/08/2026-16:57:09] [TRT] [I] Total Weights Memory: 27318148 bytes
+[10/08/2026-16:57:09] [TRT] [I] Compiler backend is used during engine execution.
+[10/08/2026-16:57:09] [TRT] [I] Engine generation completed in 11.2381 seconds.
+[10/08/2026-16:57:09] [TRT] [I] [MemUsageStats] Peak memory usage of TRT CPU/GPU memory allocators: CPU 0 MiB, GPU 50 MiB
+[34m[1mTensorRT:[0m export success ✅ 48.0s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.engine' (28.0 MB)
+
+Export complete (44.8s)
+Results saved to [1m/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.engine[0m
+Predict:         yolo predict task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.engine imgsz=640 
+Validate:        yolo val task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.engine imgsz=640 data=/home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/visdrone.yaml  
+Visualize:       https://netron.app
+    OK: /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.engine (44.8 s)
+      log: 2026-10-08 16:56:25,754 [34m[1mTensorRT:[0m collecting INT8 calibration images from 'data=/home/labpc/intb_size_study_new/int8_size_study/results/main/calibration/calib_seed1.yaml'
+      log: 2026-10-08 16:56:31,234 [34m[1mTensorRT:[0m quantizing ONNX to INT8 with ModelOpt using 512 calibration images...
+      log: building INT8 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed1/model.engine
+      log: collecting INT8 calibration images from 'data=/home/labpc/intb_size_study_new/int8_size_study/results/main/calibration/calib_seed1.yaml'
+      log: quantizing ONNX to INT8 with ModelOpt using 512 calibration images...
+      log: starting export with TensorRT 11.3.0.99...
+
+--> int8_seed2
+    calibration seed 2: 512 images, 28413 objects (59.6% small)
+Ultralytics 8.4.174 🚀 Python-3.11.9 torch-2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 5080, 16303MiB)
+Model summary (fused): 72 layers, 3,007,598 parameters, 0 gradients, 8.1 GFLOPs
+
+[34m[1mPyTorch:[0m starting from '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.pt' with input shape (1, 3, 640, 640) BCHW and output shape(s) (1, 14, 8400) (6.0 MB)
+
+[34m[1mONNX:[0m starting export with onnx 1.21.0 opset 18...
+[34m[1mONNX:[0m slimming with onnxslim 0.1.97...
+[34m[1mONNX:[0m export success ✅ 0.6s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.onnx' (11.7 MB)
+[34m[1mTensorRT:[0m collecting INT8 calibration images from 'data=/home/labpc/intb_size_study_new/int8_size_study/results/main/calibration/calib_seed2.yaml'
+[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 392.8±108.3 MB/s, size: 268.4 KB)
+[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 75 images, 0 backgrounds, 0 corrupt: 14% ━╸────────── 75/512 222.1it/s 0.1s<2.0s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 155 images, 0 backgrounds, 0 corrupt: 30% ━━━╸──────── 155/512 395.2it/s 0.2s<0.9s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 236 images, 0 backgrounds, 0 corrupt: 46% ━━━━━╸────── 236/512 514.0it/s 0.3s<0.5s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 319 images, 0 backgrounds, 0 corrupt: 62% ━━━━━━━───── 319/512 604.7it/s 0.4s<0.3s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 402 images, 0 backgrounds, 0 corrupt: 78% ━━━━━━━━━─── 402/512 667.3it/s 0.5s<0.2s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 481 images, 0 backgrounds, 0 corrupt: 93% ━━━━━━━━━━━─ 481/512 703.9it/s 0.6s<0.0s[K[34m[1mval: [0mScanning /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train... 512 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 512/512 796.9it/s 0.6s
+[34m[1mval: [0m/home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/images/train/0000140_00118_d_0000002.jpg: 1 duplicate labels removed
+[34m[1mval: [0mNew cache created: /home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/labels/train.cache
+
+[34m[1mTensorRT:[0m starting export with TensorRT 11.3.0.99...
+[34m[1mTensorRT:[0m quantizing ONNX to INT8 with ModelOpt using 512 calibration images...
+2026-10-08 16:57:18,637 - [modelopt][onnx] - INFO - Starting quantization process for model: /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.onnx
+2026-10-08 16:57:18,637 - [modelopt][onnx] - INFO - Quantization mode: int8
+2026-10-08 16:57:18,637 - [modelopt][onnx] - INFO - Preprocessing the model /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.onnx
+[10/08/2026-16:57:18] [TRT] [W] WARNING The logger passed into createInferBuilder differs from one already registered for an existing builder, runtime, or refitter. So the current new logger is ignored, and TensorRT will use the existing one which is returned by nvinfer1::getLogger() instead.
+2026-10-08 16:57:18,802 - [modelopt][onnx] - INFO - Found 0 custom layers and 300 tensors
+2026-10-08 16:57:18,884 - [modelopt][onnx] - INFO - No custom ops found. If that's not correct, please make sure that the 'tensorrt' python package is correctly installed and that the paths to 'libcudnn*.so' and TensorRT 'lib/' are in 'LD_LIBRARY_PATH'. If the custom op is not directly available as a plugin in TensorRT, please also make sure that the path to the compiled '.so' TensorRT plugin is also being given via the  '--trt_plugins' flag (requires TRT 10+).
+2026-10-08 16:57:18,912 - [modelopt][onnx] - INFO - Model is cloned to /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model_opset19.onnx with opset_version 19
+2026-10-08 16:57:18,920 - [modelopt][onnx] - INFO - Duplicating shared constants
+2026-10-08 16:57:18,928 - [modelopt][onnx] - INFO - Model is cloned to /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model_named.onnx after naming the nodes
+2026-10-08 16:57:18,928 - [modelopt][onnx] - INFO - Setting up CalibrationDataProvider for calibration
+2026-10-08 16:57:18,932 - [modelopt][onnx] - INFO - Analyzing MHA nodes for int8 quantization
+2026-10-08 16:57:18,943 - [modelopt][onnx] - INFO - No MHA partitions found in the model
+2026-10-08 16:57:18,943 - [modelopt][onnx] - INFO - Starting INT8 quantization with method: max
+2026-10-08 16:57:18,955 - [modelopt][onnx] - INFO - Detecting GEMV patterns for TRT optimization
+2026-10-08 16:57:18,966 - [modelopt][onnx] - INFO - Scanning for unsupported Conv nodes for quantization
+2026-10-08 16:57:18,966 - [modelopt][onnx] - INFO - Found 0 unsupported Conv nodes for quantization
+2026-10-08 16:57:18,966 - [modelopt][onnx] - INFO - Configuring ORT for ModelOpt ONNX quantization
+2026-10-08 16:57:18,966 - [modelopt][onnx] - INFO - Successfully enabled 1 EPs for ORT: ['CPUExecutionProvider']
+2026-10-08 16:57:18,966 - [modelopt][onnx] - INFO - Quantizable op types: ['Mul', 'MaxPool', 'Resize', 'Conv', 'Add']
+2026-10-08 16:57:18,966 - [modelopt][onnx] - INFO - Finding nodes to quantize
+2026-10-08 16:57:18,966 - [modelopt][onnx] - INFO - Building non-residual Add input map
+2026-10-08 16:57:18,967 - [modelopt][onnx] - INFO - Searching for patterns like MHA, LayerNorm, etc
+2026-10-08 16:57:18,967 - [modelopt][onnx] - INFO - Found 0 layer norm partitions
+2026-10-08 16:57:18,967 - [modelopt][onnx] - INFO - Found 0 MHA (QK_AV) Patterns
+2026-10-08 16:57:18,967 - [modelopt][onnx] - INFO - Found 1 non-quantizable partitions
+2026-10-08 16:57:18,967 - [modelopt][onnx] - INFO - Building KGEN/CASK targeted partitions
+2026-10-08 16:57:18,968 - [modelopt][onnx] - INFO - Classifying partition nodes
+2026-10-08 16:57:18,969 - [modelopt][onnx] - INFO - Found 0 Conv->LayerNorm patterns to quantize
+2026-10-08 16:57:18,969 - [modelopt][onnx] - INFO - Found 57 quantizable partition nodes and 10 quantizable KGEN heads
+2026-10-08 16:57:18,969 - [modelopt][onnx] - INFO - Finding quantizable nodes. Initial nodes to quantize: 74
+2026-10-08 16:57:18,969 - [modelopt][onnx] - INFO - Found 3 pooling/window ops
+2026-10-08 16:57:18,969 - [modelopt][onnx] - INFO - Total number of quantizable nodes: 79
+2026-10-08 16:57:18,969 - [modelopt][onnx] - INFO - Final number of nodes to quantize: 72
+2026-10-08 16:57:18,969 - [modelopt][onnx] - INFO - Finding concat eliminated tensors
+2026-10-08 16:57:18,977 - [modelopt][onnx] - INFO - Starting static quantization
+2026-10-08 16:57:43,451 - [modelopt][onnx] - INFO - Starting post-processing of quantized model
+2026-10-08 16:57:43,468 - [modelopt][onnx] - INFO - Deleting QDQ nodes from marked inputs to make certain operations fusible
+2026-10-08 16:57:43,483 - [modelopt][onnx] - INFO - Converting float tensors to fp16
+2026-10-08 16:57:43,525 - [modelopt][onnx] - WARNING - Found QuantizeLinear/DequantizeLinear nodes. Updating minimum opset from 13 to 19.
+2026-10-08 16:57:43,530 - [modelopt][onnx] - WARNING - Shared constants were detected and duplicated accordingly.
+2026-10-08 16:57:43,735 - [modelopt][onnx] - WARNING - Did not find  in value info map! Assuming not castable
+2026-10-08 16:57:45,051 - [modelopt][onnx] - INFO - Quantization completed successfully in 26.10808515548706 seconds
+2026-10-08 16:57:45,079 - [modelopt][onnx] - INFO - Total number of nodes: 475
+2026-10-08 16:57:45,080 - [modelopt][onnx] - INFO - Total number of quantized nodes: 81
+2026-10-08 16:57:45,086 - [modelopt][onnx] - INFO - Quantized onnx model is saved as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.int8.onnx
+2026-10-08 16:57:45,086 - [modelopt][onnx] - INFO - Cleaning up intermediate files
+2026-10-08 16:57:45,088 - [modelopt][onnx] - INFO - Validating quantized model
+2026-10-08 16:57:45,142 - [modelopt][onnx] - INFO - Quantization process completed
+[10/08/2026-16:57:45] [TRT] [I] ----------------------------------------------------------------
+[10/08/2026-16:57:45] [TRT] [I] Input filename:   /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.int8.onnx
+[10/08/2026-16:57:45] [TRT] [I] ONNX IR version:  0.0.10
+[10/08/2026-16:57:45] [TRT] [I] Opset version:    19
+[10/08/2026-16:57:45] [TRT] [I] Producer name:    onnx.quantize
+[10/08/2026-16:57:45] [TRT] [I] Producer version: 0.1.0
+[10/08/2026-16:57:45] [TRT] [I] Domain:           
+[10/08/2026-16:57:45] [TRT] [I] Model version:    0
+[10/08/2026-16:57:45] [TRT] [I] Doc string:       
+[10/08/2026-16:57:45] [TRT] [I] ----------------------------------------------------------------
+[34m[1mTensorRT:[0m input "images" with shape(1, 3, 640, 640) DataType.FLOAT
+[34m[1mTensorRT:[0m output "output0" with shape(1, 14, 8400) DataType.FLOAT
+[34m[1mTensorRT:[0m building INT8 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.engine
+[10/08/2026-16:57:45] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.
+[10/08/2026-16:57:45] [TRT] [I] Compiler backend is used during engine build.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv activation scales to fp32.
+[10/08/2026-16:57:56] [TRT] [W]  (foreignNode) Converting conv weight scales to fp32.
+[10/08/2026-16:57:56] [TRT] [I] Detected 1 inputs and 1 output network tensors.
+[10/08/2026-16:57:56] [TRT] [I] Total Host Persistent Memory: 80 bytes
+[10/08/2026-16:57:56] [TRT] [I] Total Device Persistent Memory: 0 bytes
+[10/08/2026-16:57:56] [TRT] [I] Max Scratch Memory: 40706048 bytes
+[10/08/2026-16:57:56] [TRT] [I] [BlockAssignment] Started assigning block shifts. This will take 1 steps to complete.
+[10/08/2026-16:57:56] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 0.00626ms to assign 1 blocks to 1 nodes requiring 40706048 bytes.
+[10/08/2026-16:57:56] [TRT] [I] Total Activation Memory: 40706048 bytes
+[10/08/2026-16:57:56] [TRT] [I] Total Weights Memory: 27318148 bytes
+[10/08/2026-16:57:56] [TRT] [I] Compiler backend is used during engine execution.
+[10/08/2026-16:57:56] [TRT] [I] Engine generation completed in 10.8 seconds.
+[10/08/2026-16:57:56] [TRT] [I] [MemUsageStats] Peak memory usage of TRT CPU/GPU memory allocators: CPU 0 MiB, GPU 50 MiB
+[34m[1mTensorRT:[0m export success ✅ 47.3s, saved as '/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.engine' (27.8 MB)
+
+Export complete (45.7s)
+Results saved to [1m/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.engine[0m
+Predict:         yolo predict task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.engine imgsz=640 
+Validate:        yolo val task=detect model=/home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.engine imgsz=640 data=/home/labpc/intb_size_study_new/int8_size_study/data/VisDrone/visdrone.yaml  
+Visualize:       https://netron.app
+    OK: /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.engine (45.7 s)
+      log: 2026-10-08 16:57:11,334 [34m[1mTensorRT:[0m collecting INT8 calibration images from 'data=/home/labpc/intb_size_study_new/int8_size_study/results/main/calibration/calib_seed2.yaml'
+      log: 2026-10-08 16:57:18,636 [34m[1mTensorRT:[0m quantizing ONNX to INT8 with ModelOpt using 512 calibration images...
+      log: building INT8 engine as /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/int8_seed2/model.engine
+      log: collecting INT8 calibration images from 'data=/home/labpc/intb_size_study_new/int8_size_study/results/main/calibration/calib_seed2.yaml'
+      log: quantizing ONNX to INT8 with ModelOpt using 512 calibration images...
+      log: starting export with TensorRT 11.3.0.99...
+
+model.onnx graph hash per condition (should match unless rewritten in place):
+  fp32         f72ef31f495b00fb
+  fp16         f72ef31f495b00fb
+  int8_seed0   f72ef31f495b00fb
+  int8_seed1   f72ef31f495b00fb
+  int8_seed2   f72ef31f495b00fb
+Record: /home/labpc/intb_size_study_new/int8_size_study/models/main/engines_record.json
+Next: python scripts/07_evaluate.py --tag main --split val

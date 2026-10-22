@@ -1,0 +1,80 @@
+{
+  "condition": "pytorch_fp32",
+  "tag": "dev",
+  "split": "val",
+  "timestamp_utc": "2026-10-13T10:48:30Z",
+  "development_only": true,
+  "artefact": "/home/labpc/intb_size_study_new/int8_size_study/models/dev/fp32_checkpoint.pt",
+  "artefact_sha256": "68f5a4176d688a7ba6ffdbdab1f8009e17340c2934a80452b4ad634b52e6895d",
+  "pytorch_tf32": {
+    "cudnn_allow_tf32": false,
+    "matmul_allow_tf32": false
+  },
+  "settings": {
+    "conf": 0.001,
+    "iou": 0.7,
+    "max_det": 500,
+    "batch": 1,
+    "rect": false,
+    "coco_max_dets": [
+      1,
+      100,
+      500
+    ],
+    "imgsz": 640
+  },
+  "predictions": {
+    "n_predictions_file": 274000,
+    "n_used": 274000,
+    "n_unknown_image": 0,
+    "n_unknown_category": 0
+  },
+  "pycocotools": {
+    "all": {
+      "AP50_95": 0.04123652569927791,
+      "AP50": 0.08272396855567386,
+      "n_gt": 38759
+    },
+    "small": {
+      "AP50_95": 0.01769713057799885,
+      "AP50": 0.048686101623764765,
+      "n_gt": 26575
+    },
+    "non_small": {
+      "AP50_95": 0.07714578907392168,
+      "AP50": 0.14137903027675738,
+      "n_gt": 12184
+    },
+    "medium": {
+      "AP50_95": 0.06942328892260492,
+      "AP50": 0.1327528511316294,
+      "n_gt": 11116
+    },
+    "large": {
+      "AP50_95": 0.15894974601168366,
+      "AP50": 0.2245418876502163,
+      "n_gt": 1068
+    }
+  },
+  "own_ap_matches_pycocotools": {
+    "ok": true,
+    "max_abs_diff": 5.551115123125783e-17
+  },
+  "ultralytics": {
+    "mAP50_95": 0.039476980853569016,
+    "mAP50": 0.08043665272226681,
+    "results_dict": {
+      "metrics/precision(B)": 0.5530650864969908,
+      "metrics/recall(B)": 0.11134697728881456,
+      "metrics/mAP50(B)": 0.08043665272226681,
+      "metrics/mAP50-95(B)": 0.039476980853569016,
+      "fitness": 0.039476980853569016
+    },
+    "speed_ms_per_image": {
+      "preprocess": 0.7760698759327574,
+      "inference": 4.969743443438426,
+      "loss": 0.004112100280501819,
+      "postprocess": 1.9983796988712474
+    }
+  }
+}

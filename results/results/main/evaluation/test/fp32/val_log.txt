@@ -1,0 +1,22 @@
+2026-10-12 16:10:07,052 Ultralytics 8.4.174 🚀 Python-3.11.9 torch-2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 5080, 16303MiB)
+2026-10-12 16:10:07,062 Loading /home/labpc/intb_size_study_new/int8_size_study/models/main/engines/fp32/model.engine for TensorRT inference...
+2026-10-12 16:10:08,122 Setting batch=1 input of shape (1, 3, 640, 640)
+2026-10-12 16:10:08,127 [34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 6139.8±1384.0 MB/s, size: 167.4 KB)
+2026-10-12 16:10:24,800                    all       1610      75102      0.411        0.3      0.274      0.151
+2026-10-12 16:10:24,801             pedestrian       1197      21006      0.421      0.247      0.221     0.0824
+2026-10-12 16:10:24,801                 people        797       6376      0.458      0.111      0.121     0.0391
+2026-10-12 16:10:24,801                bicycle        377       1302      0.275     0.0829     0.0696     0.0274
+2026-10-12 16:10:24,801                    car       1530      28074      0.596      0.705      0.672      0.408
+2026-10-12 16:10:24,802                    van       1168       5771       0.38      0.338      0.301      0.188
+2026-10-12 16:10:24,802                  truck        750       2659      0.405      0.375      0.332      0.205
+2026-10-12 16:10:24,802               tricycle        245        530      0.242      0.204      0.142     0.0732
+2026-10-12 16:10:24,802        awning-tricycle        233        599      0.346      0.154      0.148     0.0787
+2026-10-12 16:10:24,802                    bus        838       2940      0.604      0.488      0.493      0.327
+2026-10-12 16:10:24,802                  motor        794       5845      0.383      0.291      0.236      0.087
+2026-10-12 16:10:24,802 Speed: 0.7ms preprocess, 0.8ms inference, 0.0ms loss, 1.2ms postprocess per image
+2026-10-12 16:10:24,802 Saving /home/labpc/intb_size_study_new/int8_size_study/results/main/evaluation/test/fp32/predictions.json...
+2026-10-12 16:10:30,581 
+Evaluating faster-coco-eval mAP...
+2026-10-12 16:10:30,583 WARNING ⚠️ [31m[1mrequirements:[0m Ultralytics requirement ['faster-coco-eval>=1.6.7'] not found, AutoUpdate disabled by YOLO_AUTOINSTALL=False
+2026-10-12 16:10:30,583 WARNING ⚠️ faster-coco-eval unable to run: No module named 'faster_coco_eval'
+2026-10-12 16:10:30,660 Results saved to [1m/home/labpc/intb_size_study_new/int8_size_study/results/main/evaluation/test/fp32[0m

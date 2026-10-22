@@ -1,0 +1,12 @@
+{
+  "seed": 1,
+  "n_images": 512,
+  "objects": 28295,
+  "small": 17216,
+  "medium": 9523,
+  "large": 1556,
+  "pct_small": 60.84,
+  "list_file": "/home/labpc/intb_size_study_new/int8_size_study/results/dev/calibration/calib_seed1.txt",
+  "list_sha256": "99cc4d8132caaf41f148ba40f0b81548ec67352d8cd34cf78c7bfa5c28b21246",
+  "dataset_yaml": "/home/labpc/intb_size_study_new/int8_size_study/results/dev/calibration/calib_seed1.yaml"
+}

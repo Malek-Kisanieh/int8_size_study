@@ -1,0 +1,16 @@
+check,condition,value,status
+own AP (from matches.npz) = pycocotools,fp32,2.7755575615628914e-17,PASS
+own AP (from matches.npz) = pycocotools,fp16,2.7755575615628914e-17,PASS
+own AP (from matches.npz) = pycocotools,int8_seed0,2.7755575615628914e-17,PASS
+own AP (from matches.npz) = pycocotools,int8_seed1,6.938893903907228e-18,PASS
+own AP (from matches.npz) = pycocotools,int8_seed2,2.7755575615628914e-17,PASS
+"PyTorch FP32 - TensorRT FP32, AP50_95 all",fp32,-1.5440613304371076e-05,report
+"PyTorch FP32 - TensorRT FP32, AP50_95 small",fp32,-5.248874481729449e-06,report
+"PyTorch FP32 - TensorRT FP32, AP50_95 non_small",fp32,-7.896773815199709e-06,report
+"PyTorch FP32 - TensorRT FP32, AP50_95 medium",fp32,1.3501117778327854e-05,report
+"PyTorch FP32 - TensorRT FP32, AP50_95 large",fp32,-0.00016659463842430555,report
+own AP50_95 'all' - Ultralytics mAP50-95 (different implementation),fp32,0.0017602478150311185,report
+own AP50_95 'all' - Ultralytics mAP50-95 (different implementation),fp16,0.0017697172711071962,report
+own AP50_95 'all' - Ultralytics mAP50-95 (different implementation),int8_seed0,0.0017444464494347223,report
+own AP50_95 'all' - Ultralytics mAP50-95 (different implementation),int8_seed1,0.0016523896475538064,report
+own AP50_95 'all' - Ultralytics mAP50-95 (different implementation),int8_seed2,0.0016207373648276027,report
