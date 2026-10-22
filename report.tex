@@ -292,7 +292,8 @@ lost 0.43 AP points for small objects and 1.39 points for non-small objects.
 
 \begin{table}[!t]
 \caption{Test-dev AP@[.5:.95] by object-size group. Point estimates with 95\% paired-bootstrap
-confidence intervals, on a 0--100 scale.}
+confidence intervals, on a 0--100 scale. Relative losses in the text are computed from unrounded
+AP values and can differ slightly from ratios of the rounded values shown here.}
 \label{tab:ap-results}
 \centering
 \footnotesize
@@ -481,9 +482,11 @@ so the overall loss of 5--7\% is caused by INT8 quantization, but the size patte
 necessarily specific to INT8.
 
 Overall, the experiment provides no conclusive evidence for a size-dependent INT8 accuracy loss
-under the evaluated conditions. Future work should test additional models and datasets, separate
-the effects of object size and class, and measure inference performance alongside accuracy to
-quantify the practical trade-offs of post-training quantization for aerial object detection.
+under the evaluated conditions. Future work should test additional models and datasets and
+measure inference performance under a controlled protocol. Size and class could be separated by
+estimating $D$ within a single class, such as cars, which are numerous in both groups (15,112
+small and 12,962 non-small), or by rescaling test images so that the same objects cross the
+size threshold.
 
 % =========================================================================== REFERENCES
 \begin{thebibliography}{00}
