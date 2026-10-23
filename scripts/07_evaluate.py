@@ -1,20 +1,21 @@
-"""Stage 6 — Accuracy of every condition, overall and per object-size bin.
+"""Stage 6 - Accuracy of every condition, overall and per object-size bin.
 
 For each condition (the frozen PyTorch checkpoint and every TensorRT engine):
-  1. Ultralytics runs inference on the chosen split with IDENTICAL settings for all conditions
+  1. Ultralytics runs inference on the chosen split with the same settings for all conditions
      (config.yaml -> evaluation: conf 0.001, NMS IoU 0.7, max_det 500, batch 1, rect False, 640x640)
      and writes predictions.json.
-  2. pycocotools matches the predictions with our ground truth, with the frozen size bins
+  2. pycocotools matches the predictions with our ground truth using the frozen size bins
      (all / small / non_small / medium / large) and up to 500 detections per image.
-  3. AP@[.5:.95] and AP@0.5 per bin are saved to metrics.json, and the per-image match records to
-     matches.npz (input of the bootstrap in Stage 8). Our AP recomputation is checked against
-     pycocotools immediately (must agree to 1e-9).
+  3. AP@[.5:.95] and AP@0.5 per bin go to metrics.json and the per-image match records to
+     matches.npz (input to the bootstrap in Stage 8). Our own AP recomputation must agree with
+     pycocotools to 1e-9.
 
-The PyTorch checkpoint is evaluated with TF32 disabled; comparing it with the TensorRT FP32 engine is
-the planned check that the FP32 engine is a valid FP32 baseline.
+The PyTorch checkpoint is evaluated with TF32 disabled. Comparing it with the TensorRT FP32 engine
+checks that the engine is a valid FP32 baseline.
 
 BLINDING: development runs use --split val. The test split (test-dev) is refused unless --final is
-given, and only for tag 'main'. Run --final exactly once, when everything else is finished.
+given, and only for tag 'main'. The final run is done once, after everything else is frozen.
+(Stage 7, the latency benchmark, was not implemented; see PREREGISTRATION.md section 11, D2.)
 
 Usage (from the project root):
     python scripts/07_evaluate.py --tag dev  --split val
@@ -141,7 +142,7 @@ def main() -> int:
             r = ap[b]
             print(f"    {b:<10s}  {r['AP50_95']:.4f}   {r['AP50']:.4f}   {r['n_gt']}")
 
-    # ---- point-estimate overview of everything evaluated on this split so far
+    # ---- point estimates for every condition evaluated on this split so far
     print_header(f"Overview: AP@[.5:.95] per size bin on '{split}' (point estimates; CIs come from Stage 8)")
     print(f"  {'condition':<14s}" + "".join(f"{b:>11s}" for b in BINS))
     for cond in available:

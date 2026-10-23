@@ -1,262 +1,235 @@
 # INT8 post-training quantization and object size in aerial detection
 
-Research Methodology in Computer Science (5 ECTS) project.
+Course project for DV2654 Research Methodology in Computer Science, Blekinge Institute of
+Technology (BTH).
 
-> **Research question.** In aerial imagery, is the relative loss in detection accuracy caused by INT8
-> post-training quantization of a lightweight YOLO detector larger for small objects than for larger objects?
+**Authors:** Ali Reza Hussaini, Mhd Malek Kisanieh
 
-The frozen design is in [`PREREGISTRATION.md`](PREREGISTRATION.md). Every setting is in
-[`config.yaml`](config.yaml), and the scripts read their settings only from there.
+**Research question.** When YOLOv8n is quantized to INT8 with TensorRT post-training quantization,
+does it lose relatively more accuracy (COCO AP) on small objects (box area below 32² px) than on
+non-small objects in drone images (VisDrone2019-DET)?
 
-**Authors:** Ali Reza Hussaini, Mhd Malek Kisanieh.
+The study was pre-registered. The frozen design and the deviation log are in
+[`PREREGISTRATION.md`](PREREGISTRATION.md). All settings are in [`config.yaml`](config.yaml), and the
+scripts read their settings only from that file.
 
-## Status: study completed (October 2026)
+## Status and outcome
 
-- **Paper:** [`report.tex`](report.tex) / `report.pdf` (IEEE conference format). Build it with
-  `latexmk -pdf report.tex`; the figures are read from `results/results/main/analysis/test/figures/`.
-- **Results:** `results/results/` holds the logs and outputs of the final run (dataset reports,
-  calibration lists, per-engine `metrics.json`, `table3_accuracy.csv`, `table4_hypothesis.csv`,
-  `summary.json`, figures). Every number in the paper comes from these files. The large raw files
-  (`predictions.json`, `*.npz`, ~1.3 GB) are not committed.
-- **Outcome:** confirmatory test inconclusive. D = +0.96 pp, 95% CI [−0.81, +3.03] for FP32 vs
-  INT8 seed 0 on AP@[.5:.95], so H1 is not supported.
-- **Deviations:** see `PREREGISTRATION.md` §11. Python 3.11.9 / PyTorch 2.10.0 were used instead
-  of the versions below, and the controlled latency benchmark (Stage 7) was not implemented.
+The study is finished (October 2026).
 
-The setup instructions below are kept as they were written for running the study.
+- **Main statistic.** D is the relative AP drop for small objects minus the relative AP drop for
+  non-small objects (FP32 vs INT8 seed 0, AP@[.5:.95], test-dev). It is estimated with a paired
+  image-level bootstrap with 2,000 resamples. H1 is D > 0.
+- **Result.** D = +0.96 percentage points, 95% CI [−0.81, +3.03]. The interval contains zero, so the
+  pre-registered test is inconclusive and H1 is not supported.
+- **Post-hoc check (deviation D4).** A cluster bootstrap over the 61 filename prefixes of test-dev
+  gives a 95% CI of [−0.65, +4.14]. It is not used for the confirmatory decision.
+
+## Paper
+
+The graded report is [`report.tex`](report.tex) / [`report.pdf`](report.pdf) (IEEE conference
+format). Build it from the project root with
+
+```bash
+latexmk -pdf report.tex
+```
+
+The figures are read from `results/results/main/analysis/test/figures/`.
 
 ## Project structure
 
 ```
 int8_size_study/
-├── PREREGISTRATION.md        frozen design + decision log + deviation log
-├── config.yaml               single source of truth for all settings
+├── PREREGISTRATION.md         frozen design, decisions and deviation log (§11)
+├── config.yaml                all settings
+├── report.tex, report.pdf     the paper
 ├── requirements/
-│   ├── common.txt            pinned packages shared by both profiles
-│   ├── trt11-cu12.txt        PREFERRED: TensorRT 11 (explicit INT8 via ModelOpt)
-│   └── trt10-cu12.txt        FALLBACK:  TensorRT 10 (implicit INT8 calibration)
-├── src/common.py             shared helpers (config, hashing, downloads, logging)
+│   ├── common.txt             pinned packages shared by both profiles
+│   ├── trt11-cu12.txt         main profile: TensorRT 11, INT8 via NVIDIA ModelOpt
+│   └── trt10-cu12.txt         pre-registered fallback: TensorRT 10
+├── src/
+│   ├── common.py              config, hashing, downloads, logging
+│   └── evaluation.py          size-binned COCO evaluation and bootstrap AP
 ├── scripts/
-│   ├── 01_environment_report.py   Stage 2
-│   ├── 02_smoke_test.py           Stage 2
-│   ├── 03_prepare_dataset.py      Stage 3
-│   ├── 04_check_dataset.py        Stage 3
-│   ├── 05_train_fp32.py           Stage 4  fine-tune YOLOv8n, freeze FP32 checkpoint
-│   ├── 06_build_engines.py        Stage 5  calibration sets + FP32/FP16/INT8 engines
-│   ├── 07_evaluate.py             Stage 6  AP per size bin (pycocotools)
-│   └── 08_analyze.py              Stage 8  paired bootstrap, decision, tables, figures
-├── src/evaluation.py         size-binned COCO evaluation + exact bootstrap AP
-├── tests/test_evaluation.py  proves our AP code equals pycocotools (synthetic data)
-├── data/      (created by the scripts; not part of the package)
-├── models/    (created by the scripts)
-└── results/   (created by the scripts; everything you send back comes from here)
+│   ├── 01_environment_report.py   Stage 2  machine and package report
+│   ├── 02_smoke_test.py           Stage 2  toolchain check on COCO8
+│   ├── 03_prepare_dataset.py      Stage 3a download, verify and convert VisDrone
+│   ├── 04_check_dataset.py        Stage 3b dataset checks C1-C8 (gate before modelling)
+│   ├── 05_train_fp32.py           Stage 4  fine-tune YOLOv8n, freeze the FP32 checkpoint
+│   ├── 06_build_engines.py        Stage 5  calibration sets, FP32/FP16/INT8 engines
+│   ├── 07_evaluate.py             Stage 6  AP per size bin with pycocotools
+│   ├── 08_analyze.py              Stage 8  paired bootstrap, decision, tables, figures
+│   └── 09_cluster_bootstrap.py    Stage 9  post-hoc cluster bootstrap (D4)
+├── tests/test_evaluation.py   checks our AP code against pycocotools on synthetic detections
+└── results/results/           outputs of the final run (see below)
 ```
 
-The latency benchmark (Stage 7) was planned but not implemented (deviation D2 in
-`PREREGISTRATION.md` §11).
+The scripts also create `data/`, `models/` and `.ultralytics/`. These folders are not committed.
+Stage 7, the controlled latency benchmark, was planned but not implemented (deviation D2).
 
-## Requirements of the machine
+## Environment used for the final run
 
-| Item | Requirement |
+| Item | Version |
 |---|---|
-| OS | Linux x86_64 |
-| GPU | NVIDIA GPU, compute capability ≥ 6.1 (≥ 7.5 for INT8 tensor cores) |
-| Driver | supports CUDA 12.x or newer (`nvidia-smi` shows "CUDA Version: 12.x" or higher) |
-| Python | 3.12 |
-| Disk | ≥ 15 GiB free in the project folder |
-| Network | `pypi.org`, `pypi.nvidia.com` (TensorRT wheels), `download.pytorch.org`, `github.com` and its release-asset downloads (weights, datasets, fonts) |
+| GPU | NVIDIA GeForce RTX 5080 |
+| Python | 3.11.9 |
+| PyTorch | 2.10.0+cu128 |
+| Ultralytics | 8.4.174 |
+| TensorRT | 11.3.0.99, INT8 through NVIDIA ModelOpt |
 
-The scripts never `sudo`, never change system settings, and keep Ultralytics' settings inside the
-project (`.ultralytics/`). Ultralytics' automatic pip-installs are switched off, so a missing package
-shows up as an error instead of a silent environment change.
+ModelOpt is pinned to 0.47.0 in `requirements/trt11-cu12.txt`, but its version is not printed in
+the logs. The run used Python 3.11.9 / PyTorch 2.10.0 instead of the planned 3.12 / 2.14.1
+(deviation D1).
 
-## Stage 2 — Environment setup
+## Setup
 
-Run all commands from the project root.
+You need Linux x86_64, an NVIDIA GPU with compute capability ≥ 7.5 for INT8, a driver that
+supports CUDA 12, about 15 GiB of free disk, and access to pypi.org, pypi.nvidia.com,
+download.pytorch.org and github.com. Run all commands from the project root.
 
-**Step 1. Report the bare machine.** This needs only Python, with nothing installed:
+1. Report the bare machine. This script uses only the standard library, so it runs before
+   anything is installed. If it prints a note starting with BLOCKER, stop.
 
-```bash
-python3 scripts/01_environment_report.py --label before_install
-```
+   ```bash
+   python scripts/01_environment_report.py --label before_install
+   ```
 
-Check the "Notes" it prints. Any line starting with **BLOCKER** means stop and send me
-`results/environment/environment_before_install.json`.
+2. Create a Python 3.11 environment.
+3. Install PyTorch built for CUDA 12 first. The default PyPI build may target CUDA 13, which does
+   not work with the TensorRT CUDA 12 wheels and ModelOpt.
 
-**Step 2. Create a Python 3.12 environment.** Use either of these:
+   ```bash
+   pip install torch==2.10.0 torchvision==<matching version> --index-url https://download.pytorch.org/whl/cu128
+   python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
+   ```
 
-```bash
-conda create -n int8study python=3.12 -y && conda activate int8study
-# or
-python3.12 -m venv .venv && source .venv/bin/activate
-```
+   The check must print a CUDA version starting with `12.` and `True`.
+4. Install the TensorRT 11 profile:
 
-**Step 3. Install PyTorch built for CUDA 12.**
+   ```bash
+   pip install -r requirements/trt11-cu12.txt --extra-index-url https://pypi.nvidia.com
+   ```
 
-This must happen *before* the other packages. The default PyPI build of PyTorch 2.14.1 targets
-CUDA 13, which conflicts with TensorRT-cu12 and ModelOpt.
+5. Check the installed environment and the toolchain (Stage 2):
 
-```bash
-pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu128
-python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
-```
+   ```bash
+   python scripts/01_environment_report.py
+   python scripts/02_smoke_test.py
+   ```
 
-The check must print a CUDA version starting with `12.` and `True`.
+   The smoke test uses COCO-pretrained YOLOv8n on COCO8 and must end with `OVERALL: PASS`. Its
+   AP values are not results. The outputs of these two scripts (`results/environment/`,
+   `results/smoke_test/`) are not part of the committed results.
 
-If `cu128` is not offered for 2.14.1, pick the highest `cu12x` index listed on
-<https://pytorch.org/get-started/previous-versions/> that your driver supports. If no CUDA 12 build
-of 2.14.x exists at all, stop and tell me; the profile would then need to change.
+   If the INT8 export fails on TensorRT 11, switch to the pre-registered fallback
+   (`PREREGISTRATION.md` §9), re-run both checks and add a row to §11. We did not need it.
 
-**Step 4. Install the TensorRT 11 profile.**
+   ```bash
+   pip uninstall -y tensorrt-cu12 tensorrt_cu12_libs tensorrt_cu12_bindings nvidia-modelopt
+   pip install -r requirements/trt10-cu12.txt --extra-index-url https://pypi.nvidia.com
+   ```
 
-```bash
-pip install -r requirements/trt11-cu12.txt --extra-index-url https://pypi.nvidia.com
-```
+The scripts do not use `sudo`, keep the Ultralytics settings inside the project, and turn off
+Ultralytics' automatic pip installs, so a missing package shows up as an error.
 
-**Step 5. Report the installed environment.**
+## Reproducing the study
 
-```bash
-python scripts/01_environment_report.py --label after_install
-```
-
-**Step 6. Run the smoke test.** This is a functional check only: COCO-pretrained YOLOv8n on 4 COCO8
-images. Its mAP values are meaningless as results.
-
-```bash
-mkdir -p results/smoke_test
-python scripts/02_smoke_test.py 2>&1 | tee results/smoke_test/console.log
-```
-
-It must end with `OVERALL: PASS`. The lines under "INT8 export evidence" show which INT8 path was
-used. With TensorRT 11 you should see `quantizing ONNX to INT8 with ModelOpt ...`.
-
-**If the INT8 export fails on TensorRT 11**, switch to the fallback profile (pre-registered) and
-add a row to the deviation log in `PREREGISTRATION.md`:
+**Stage 3: dataset.** `03_prepare_dataset.py` downloads about 1.9 GB of archives, verifies them by
+SHA-256 and writes YOLO labels and COCO JSON from the same parsed boxes (`--splits` and
+`--skip-download` are optional). `04_check_dataset.py` runs checks C1-C8 and exits with code 1 if
+any check fails. Do not continue in that case.
 
 ```bash
-pip uninstall -y tensorrt-cu12 tensorrt_cu12_libs tensorrt_cu12_bindings nvidia-modelopt
-pip install -r requirements/trt10-cu12.txt --extra-index-url https://pypi.nvidia.com
-python scripts/01_environment_report.py --label after_install_trt10
-python scripts/02_smoke_test.py 2>&1 | tee results/smoke_test/console.log
+python scripts/03_prepare_dataset.py
+python scripts/04_check_dataset.py
+python tests/test_evaluation.py
 ```
 
-**Send back after Stage 2:**
-
-- `results/environment/environment_before_install.json`
-- `results/environment/environment_after_install.json`
-- `results/environment/pip_freeze_after_install.txt`
-- `results/smoke_test/smoke_test.json`
-- `results/smoke_test/console.log`
-- `results/smoke_test/export_int8.log`
-
-## Stage 3 — Dataset preparation and sanity checks
-
-```bash
-mkdir -p results/dataset
-python scripts/03_prepare_dataset.py 2>&1 | tee results/dataset/prepare_console.log
-python scripts/04_check_dataset.py   2>&1 | tee results/dataset/check_console.log
-```
-
-`03_prepare_dataset.py` downloads about 1.9 GB of archives and verifies each by SHA-256. It then
-converts the annotations once into two formats from the same parsed boxes:
-
-- YOLO labels, used by Ultralytics for training, calibration and inference
-- COCO JSON for val and test, used later by pycocotools to compute AP
-
-Images are hard-linked rather than copied, so they take no extra disk space. If you later delete
-`data/raw/`, the prepared images survive.
-
-`04_check_dataset.py` is the **gate** before any modelling. It runs checks C1–C8 (see the docstring)
-and exits with code 1 if any check fails; in that case do not continue to Stage 4.
-
-**Expected output.** The archives are hash-verified, so your numbers must match these reference
-values from my verification run of the scripts exactly. A mismatch means something went wrong.
+`tests/test_evaluation.py` needs the Stage 3 output (`data/VisDrone/annotations/coco_gt_val.json`)
+and pycocotools. Both of its tests must pass. Because the archives are hash-verified, the counts
+should match `results/results/dataset/size_bin_counts.csv`:
 
 | Split | Images | Objects | Small | Medium | Large |
 |---|---|---|---|---|---|
 | train | 6,471 | 343,204 | 60.5% | 34.0% | 5.5% |
 | val | 548 | 38,759 | 68.6% | 28.7% | 2.8% |
-| test | 1,610 | 75,102 | 67.7% | 29.1% | 3.2% |
+| test-dev | 1,610 | 75,102 | 67.7% | 29.1% | 3.2% |
 
-All checks C1–C8 should report PASS.
-
-**Look at these figures yourselves:**
-
-- `results/dataset/figures/samples_*.png` — boxes must sit on the objects, coloured red (small),
-  orange (medium) or blue (large)
-- `results/dataset/figures/fig1_size_distribution_test.png` — size distribution of test-dev
-  (summarized in the text of the final paper, not shown as a figure)
-
-**Send back after Stage 3:**
-
-- `results/dataset/dataset_checks.json`
-- `results/dataset/prepare_report.json`
-- `results/dataset/size_bin_counts.csv`
-- the two console logs
-
-## Stages 4–8 — Training, engines, evaluation, analysis
-
-Work in the **dedicated Python 3.12 environment** (not `venv-ardupilot`). The prompt must show only
-`(.venv)` or your own environment name. Run every command from the project root.
-
-**First prove the evaluation code, then run the whole pipeline once as a quick `dev` test on val:**
+**Development run on val.** The `dev` tag trains for 3 epochs on 10% of train and checks that every
+stage runs. Its results are never reported.
 
 ```bash
-python tests/test_evaluation.py                 # both tests must PASS
-python scripts/05_train_fp32.py   --tag dev     # 3 epochs on 10 % of train (minutes)
-python scripts/06_build_engines.py --tag dev    # FP32, FP16, INT8 x 3 seeds
-python scripts/07_evaluate.py     --tag dev --split val
-python scripts/08_analyze.py      --tag dev --split val --reps 50
+python scripts/05_train_fp32.py    --tag dev 2>&1 | tee results/train_dev_console.log
+python scripts/06_build_engines.py --tag dev
+python scripts/07_evaluate.py      --tag dev --split val
+python scripts/08_analyze.py       --tag dev --split val --reps 50
 ```
 
-`dev` results are labelled DEVELOPMENT and are never reported. Their only job is to show that every
-stage runs on your machine before the long training starts.
-
-**Then the real experiment:**
+**Main run (Stages 4-6, evaluated on val).**
 
 ```bash
-mkdir -p results
-python scripts/05_train_fp32.py   --tag main 2>&1 | tee results/train_main_console.log    # long run
+python scripts/05_train_fp32.py    --tag main 2>&1 | tee results/train_main_console.log
 python scripts/06_build_engines.py --tag main 2>&1 | tee results/engines_main_console.log
-python scripts/07_evaluate.py     --tag main --split val                                 # development check
+python scripts/07_evaluate.py      --tag main --split val 2>&1 | tee results/eval_val_console.log
 ```
 
-If training is interrupted, run `python scripts/05_train_fp32.py --tag main --resume`.
+If training stops, continue it with `python scripts/05_train_fp32.py --tag main --resume`.
+`06_build_engines.py` builds each engine once (FP32, FP16 and INT8 with calibration seeds 0, 1 and
+2) and does not rebuild an existing engine unless `--force` is given. `07_evaluate.py` and
+`06_build_engines.py` also accept `--conditions` to run a subset.
 
-**Stop here and send me the following, before running the final evaluation:**
+**Safeguards.** `05_train_fp32.py` refuses to run unless the Stage 3 checks passed, and it never
+overwrites a frozen model. `models/<tag>/model_record.json` holds the SHA-256 of the checkpoint and
+`engines_record.json` holds the engine settings and hashes. Stages 5 and 6 check these hashes
+before they use a file. The PyTorch FP32 reference runs with TF32 disabled. In the COCO files,
+`category_id` is the class index + 1, as in the Ultralytics prediction JSON.
 
-- `models/main/model_record.json`
-- `models/main/engines_record.json`
-- `results/main/evaluation/val/*/metrics.json`
-
-Only when the val numbers look sane, run the **final, confirmatory** evaluation **once**:
+**Final confirmatory run on test-dev.** Run this once, after everything else is finished.
 
 ```bash
 python scripts/07_evaluate.py --tag main --split test --final
 python scripts/08_analyze.py  --tag main --split test --final
 ```
 
-The test split is refused without `--final`, which protects the blinding rule in the
-pre-registration. Stage 8 compares small, non-small, medium and large objects for every condition.
-It writes `table3_accuracy.csv` (AP per size bin with 95% CIs), `table4_hypothesis.csv` (drops and
-D with CIs), `summary.json` (the H1 decision) and the figures, all in `results/main/analysis/test/`.
+**Stage 9: post-hoc cluster bootstrap (D4).**
 
-## What each script does and why
+```bash
+python scripts/09_cluster_bootstrap.py --workers 6
+```
 
-| Script | Key design choices |
+This script was added after the confirmatory analysis. It needs the raw Stage 6 files
+(`predictions.json` and `matches.npz` under `main/evaluation/test/`), which are not committed.
+
+### Test-split guard and blinding
+
+The pre-registration fixes the blinding rule: INT8 results on test-dev are produced only in the
+final run, and all development uses val. The scripts enforce it. `07_evaluate.py` and
+`08_analyze.py` refuse the test split unless both `--final` and `--tag main` are given, and
+`08_analyze.py` does not allow `--reps` to change the 2,000 resamples of the final analysis.
+
+## Results
+
+The scripts write to `results/<tag>/`. The outputs of our run are committed in `results/results/`,
+and every number in the paper comes from these files.
+
+| Path in `results/results/` | Content |
 |---|---|
-| `01_environment_report.py` | Uses only the standard library, so it also runs before installation. It records GPU, driver, CUDA, package versions and `pip freeze`, and whether the GPU supports TF32/INT8. It also lists other GPU processes, which matter for latency. |
-| `02_smoke_test.py` | Exports FP32, FP16 and INT8 engines in **separate folders**, because Ultralytics would otherwise overwrite `model.engine`. It saves each export log as evidence of how INT8 was built, and downloads COCO8 itself so nothing lands outside the project. |
-| `03_prepare_dataset.py` | Uses our own converter instead of Ultralytics' built-in one, so every skipped, clipped or dropped box is counted and reported. YOLO and COCO formats come from the same parsed boxes. COCO `category_id` = class index + 1, which matches Ultralytics' prediction JSON. |
-| `05_train_fp32.py` | Refuses to run unless Stage 3 passed, and refuses to overwrite a frozen model. It records the checkpoint's SHA-256; every later stage verifies it. |
-| `06_build_engines.py` | Builds each engine in its own folder, exactly once. It saves the calibration image lists and their size statistics. |
-| `07_evaluate.py` | Uses identical inference settings for every condition. pycocotools does the matching, and our AP recomputation is checked against it immediately. The PyTorch FP32 reference runs with TF32 disabled. |
-| `08_analyze.py` | Draws the same resampled image sets for every condition (a paired design) and computes exact COCO AP per resample. It applies the pre-registered decision, robustness and FP16 rules. |
-| `04_check_dataset.py` | Fully decodes every image, validates every label line, and checks that the YOLO and COCO boxes are identical. It also checks for duplicate images (leakage), the counts per size bin, the density per image (for `max_det`) and the filename-prefix structure (for the bootstrap unit). |
+| `dataset/` | conversion report, checks C1-C8 (`dataset_checks.json`), counts per size bin and class, filename-prefix groups, sample and size-distribution figures |
+| `main/calibration/` | the 512 calibration images per seed and their size statistics |
+| `main/evaluation/{val,test}/<condition>/` | `metrics.json` (AP@[.5:.95] and AP@0.5 per size bin) and the Ultralytics log for each condition |
+| `main/analysis/test/table3_accuracy.csv` | AP per condition and size bin with 95% CIs |
+| `main/analysis/test/table4_hypothesis.csv` | absolute and relative AP drops, D and D_abs with 95% CIs |
+| `main/analysis/test/summary.json` | H1 decision, robustness over the three INT8 seeds, FP16 control |
+| `main/analysis/test/validation.csv` | pipeline checks (our AP vs pycocotools, PyTorch FP32 vs TensorRT FP32) |
+| `main/analysis/test/cluster_bootstrap.json` | post-hoc cluster bootstrap (D4) |
+| `main/analysis/test/figures/` | figures used in the paper |
+| `dev/` | development run on val, not reported (see D3) |
+| `*_console.log` | console logs of training, engine builds and val evaluation |
+| `train_main_terminal.txt` | terminal copy of the main training run, which shows the environment (evidence for D1) |
 
-## Reproducibility rules
+The raw files `predictions.json` and `*.npz` (about 1.3 GB in total) are not committed.
 
-1. Change settings only in `config.yaml`. After the design freeze, also log the change in
-   `PREREGISTRATION.md` §11.
-2. Never type results by hand. Every number in the paper must come from a file in `results/`.
-3. INT8 is evaluated on test-dev only in the final run. All development uses val.
+## Changing the setup
+
+Change settings only in `config.yaml`, and log every change after the design freeze in
+`PREREGISTRATION.md` §11.

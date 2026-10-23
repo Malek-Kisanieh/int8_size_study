@@ -1,13 +1,11 @@
-"""Shared helpers for all stage scripts.
+"""Helpers shared by the stage scripts.
 
-Everything that more than one script needs lives here:
-  * locating the project root and loading ``config.yaml``
-  * writing machine-readable outputs (JSON / CSV) with consistent formatting
-  * SHA-256 hashing of files (used to prove which weights / archives / engines were used)
-  * downloading files with optional hash verification
-  * configuring Ultralytics so it keeps its settings inside the project and never
-    silently pip-installs packages
-  * capturing the Ultralytics log of a step into a file
+  * project root and ``config.yaml`` loading
+  * JSON / CSV output
+  * SHA-256 file hashes (record which weights, archives and engines were used)
+  * downloads with optional hash check
+  * Ultralytics setup (settings kept inside the project, no automatic pip installs)
+  * saving the Ultralytics log of a step to a file
 """
 
 from __future__ import annotations
@@ -110,10 +108,10 @@ def md5_file(path: str | Path, chunk_size: int = 1 << 20) -> str:
 
 # ----------------------------------------------------------------------------------- download
 def download_file(url: str, dest: str | Path, expected_sha256: str | None = None) -> dict:
-    """Download ``url`` to ``dest`` (skipped if the file already exists and matches the hash).
+    """Download ``url`` to ``dest`` unless the file already exists, then check its SHA-256.
 
-    Returns a small provenance record: url, path, size, sha256, whether it was downloaded now.
-    Raises RuntimeError if an expected hash is given and does not match.
+    Returns a provenance record (url, path, size, sha256, whether it was downloaded now).
+    Raises RuntimeError if ``expected_sha256`` is given and does not match.
     """
     dest = Path(dest)
     ensure_dir(dest.parent)
@@ -163,13 +161,13 @@ def link_or_copy(src: Path, dst: Path) -> None:
 
 # ----------------------------------------------------------------------------------- ultralytics
 def configure_ultralytics(cfg: dict) -> None:
-    """Must be called BEFORE ``import ultralytics``.
+    """Set Ultralytics environment variables. Call this BEFORE ``import ultralytics``.
 
-    * YOLO_CONFIG_DIR keeps Ultralytics' settings file and fonts inside the project, so we do not
-      change anything in the user's home directory.
-    * YOLO_AUTOINSTALL=false stops Ultralytics from pip-installing missing packages on its own.
-      A missing package then becomes a visible error instead of a silent environment change,
-      which keeps the environment reproducible (everything is installed from requirements/).
+    * YOLO_CONFIG_DIR keeps the Ultralytics settings file and fonts inside the project instead of
+      the user's home directory.
+    * YOLO_AUTOINSTALL=false stops Ultralytics from pip-installing missing packages. A missing
+      package then raises an error instead of silently changing the environment, which is
+      installed only from requirements/.
     """
     if "ultralytics" in sys.modules:
         print("WARNING: configure_ultralytics() called after ultralytics was imported.")
@@ -204,9 +202,9 @@ def print_header(title: str) -> None:
 
 # ----------------------------------------------------------------------------------- run folders
 def run_dirs(cfg: dict, tag: str) -> dict[str, Path]:
-    """Folders of one run. tag 'main' = the real experiment; 'dev' = quick pipeline test.
+    """Folders of one run: tag 'main' is the real experiment, 'dev' a quick pipeline test.
 
-    Everything produced under tag 'dev' is a DEVELOPMENT artefact and is never reported.
+    Outputs under 'dev' are only for development and are never reported.
     """
     if tag not in ("main", "dev"):
         raise ValueError("tag must be 'main' or 'dev'")

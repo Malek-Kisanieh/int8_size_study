@@ -30,21 +30,21 @@ mhki22@student.bth.se}
 
 % =========================================================================== ABSTRACT
 \begin{abstract}
-INT8 post-training quantization is a common way to make object detectors fast enough for
-on-board use in drones, and its accuracy cost is usually reported as one aggregate value.
-Aerial images, however, are dominated by small objects, which are often assumed to be more
-sensitive to reduced numerical precision. This study tests that assumption with a
-pre-registered experiment. A YOLOv8n detector was fine-tuned on VisDrone2019-DET and
-converted with TensorRT into FP32, FP16 and INT8 engines, using three different INT8 calibration
-sets. All engines were evaluated on the same 1,610 test-dev images, and the difference in
-relative average precision loss between small and non-small objects was estimated with a paired
-image-level bootstrap. INT8 reduced average precision by 6.43 percent for small objects and by
-5.47 percent for non-small objects. The difference of 0.96 percentage points had a 95 percent
-confidence interval from minus 0.81 to plus 3.03 points. Because the interval includes zero, the
-pre-registered result is inconclusive, and the data do not show that INT8 harms small objects
-more than larger ones. The difference was positive for all three calibration sets, but none of
-the intervals excluded zero. The data rule out a size-dependent penalty larger than about three
-percentage points, which is moderate compared with the overall INT8 loss of 5.4 percent.
+INT8 post-training quantization is a common way to make object detectors fast enough for drones,
+and its accuracy cost is usually reported as one aggregate value. Aerial images are dominated by
+small objects, which are often assumed to be more sensitive to reduced precision. We tested this
+assumption in a pre-registered experiment. A YOLOv8n detector was fine-tuned on VisDrone2019-DET
+and converted with TensorRT into FP32, FP16 and INT8 engines, with three INT8 calibration sets.
+All engines were evaluated on the same 1,610 test-dev images, and the difference in relative
+average precision loss between small and non-small objects was estimated with a paired
+image-level bootstrap. INT8 reduced AP@[.5:.95] by 6.43\% (relative) for small objects and by
+5.47\% for non-small objects. The difference, $D=+0.96$ percentage points, had a 95\% confidence
+interval of $[-0.81,\,+3.03]$ ($[-0.65,\,+4.14]$ under a post-hoc cluster bootstrap). Because the
+interval includes zero, the
+pre-registered result is inconclusive: the data do not show that INT8 harms small objects more.
+The difference was positive for all three calibration sets, but no interval excluded zero. The
+data rule out a size-dependent penalty larger than about four percentage points, which is moderate
+next to the overall INT8 loss of 5.4\%.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -56,101 +56,83 @@ TensorRT
 \section{Introduction}
 \label{sec:introduction}
 
-Unmanned aerial vehicles (UAVs) increasingly run object detectors on board, where memory,
-energy and latency budgets are tight. A standard way to meet such budgets is post-training
-quantization (PTQ) to 8-bit integers (INT8). A network trained in 32-bit floating point (FP32)
-is converted after training, using a small set of calibration images to estimate the value
-ranges of its activations; no retraining is
-needed~\cite{jacob2018quantization,nagel2021whitepaper}. Deployment toolchains such as TensorRT
-make this conversion a routine export step for YOLO
-detectors~\cite{ultralytics_tensorrt}. Its accuracy cost is typically reported as a single change
-in mean average precision (mAP).
+Unmanned aerial vehicles (UAVs) increasingly run object detectors on board, where memory, energy
+and latency budgets are tight. A standard way to meet these budgets is post-training quantization
+(PTQ) to 8-bit integers (INT8). A network trained in 32-bit floating point (FP32) is converted
+without retraining, using a small set of calibration images to estimate the value ranges of its
+activations~\cite{jacob2018quantization,nagel2021whitepaper}. Toolchains
+such as TensorRT make this conversion a routine export step for YOLO
+detectors~\cite{ultralytics_tensorrt}, and its accuracy cost is usually reported as a single
+change in mean average precision (mAP).
 
-A single overall accuracy score can hide how quantization affects different groups of objects differently. In image classification, compressed networks lose
-accuracy disproportionately on a subset of examples rather than uniformly across
-them~\cite{hooker2019forget}. In aerial detection, the subset of concern is small objects. They
-make up most annotations in drone benchmarks such as
+A single score can hide uneven effects. In image classification, compressed networks lose
+accuracy disproportionately on a subset of examples~\cite{hooker2019forget}. In aerial
+detection, the subset of concern is small objects. They make up most annotations in drone
+benchmarks such as
 VisDrone~\cite{zhu2022visdrone,cao2021visdrone} and are already the hardest to
 detect~\cite{akyon2022sahi}. Two mechanisms make a larger INT8 penalty for small objects
 plausible. First, a small object is represented by few activations, and their resolution can
-suffer when the quantization range is dominated by large outlier values, a known difficulty of
-PTQ for detectors~\cite{nagel2021whitepaper,kim2026inlier}. Second, a localization error of a
-single pixel lowers the intersection over union (IoU) of a small box much more than that of a
-large box.
+suffer when large outlier values dominate the quantization range, a known difficulty of PTQ for
+detectors~\cite{nagel2021whitepaper,kim2026inlier}. Second, a localization error of one pixel
+lowers the intersection over union (IoU) of a small box much more than that of a large box.
 
-If small objects do lose more, aggregate mAP overstates how suitable INT8 is for aerial
-deployment, where small objects often matter most. If they do not, size-specific countermeasures
-are unnecessary. Detection benchmarks commonly report accuracy by COCO size
-group~\cite{lin2014coco}. However, the PTQ studies cited here focus on proposing methods rather
-than on testing whether the loss depends on object size. The question addressed here is therefore
-the following.
+If small objects lose more, aggregate mAP overstates how suitable INT8 is for drones, where small
+objects such as pedestrians often matter most. If they do not, size-specific countermeasures are
+not needed for quantization. Detection benchmarks commonly report accuracy by COCO size
+group~\cite{lin2014coco}, but the PTQ studies cited here propose or compare methods using
+aggregate accuracy and do not test whether the loss depends on object size.
 
 \textbf{Research question:} \emph{In aerial imagery, is the relative loss in detection
 accuracy caused by INT8 post-training quantization of a lightweight YOLO detector larger for
-small objects than for larger objects?}
+small objects than for non-small objects?}
 
-The independent variable is numerical precision: an FP32 baseline versus an INT8 treatment, with
-an FP16 control. Object size (small vs.\ non-small) is an observed moderator, and the dependent
-variable is AP@[.5:.95] per size group. With $D$ defined in Section~\ref{sec:method} as the
-relative AP loss of small objects minus that of non-small objects, the hypotheses are
-$H_0\!: D\le 0$ and $H_1\!: D>0$.
-
-The study is deliberately narrow: one detector, one dataset and one quantization toolchain, so
-that numerical precision is the only manipulated factor. Its contributions are (i) a
-pre-registered, paired experimental design in which all precision conditions derive from one
-frozen checkpoint and are evaluated on identical images, (ii) a paired image-level bootstrap for
-COCO-style AP by object size, and (iii) an estimate, with its uncertainty, of the size-dependence
-of INT8 PTQ loss on VisDrone2019-DET. Section~\ref{sec:related-work} reviews related work,
-Section~\ref{sec:method} describes the method, Section~\ref{sec:results} reports the results, and
-Sections~\ref{sec:discussion} and~\ref{sec:conclusion} discuss and conclude.
+\emph{Variables, hypotheses and prediction.} The independent variable is numerical precision:
+an FP32 baseline versus an INT8 treatment, with an FP16 control. Object size is an observed
+moderator with two levels, small (box area below $32^2$ pixels) and non-small. The dependent
+variable is COCO AP averaged over IoU thresholds 0.50--0.95 (AP@[.5:.95]) per size group. The
+checkpoint, input, inference settings, test images,
+hardware and software are held constant. The test statistic $D$, defined in
+Section~\ref{sec:method}, is the relative AP loss of small objects minus that of non-small
+objects. The hypotheses are $H_0\!: D\le 0$ and $H_1\!: D>0$. If $H_1$ holds, we predict that the
+95\% confidence interval (CI) of $D$ lies entirely above zero.
 
 % =========================================================================== RELATED WORK
 \section{Related Work}
 \label{sec:related-work}
 
-\emph{Quantization.} Integer-arithmetic inference with affine quantization of weights and
-activations was formalized by Jacob et al.~\cite{jacob2018quantization}. Practical PTQ, including
-per-channel weight quantization and calibration of activation ranges, is reviewed by Nagel et
-al.~\cite{nagel2021whitepaper} and Krishnamoorthi~\cite{krishnamoorthi2018quantizing}. Wu et
-al.~\cite{wu2020integer} compare INT8 calibration methods, including the max-based calibration
-used here, and show that INT8 accuracy can be kept within 1\% of FP32 for all networks studied;
-as in most PTQ work, accuracy is reported as one aggregate metric per model. Low precision can also be used during training, as in unified
-INT8 training by Zhu et al.~\cite{zhu2020int8}. Such approaches change the trained model and are
-outside the scope of this study.
+\emph{Quantization.} Jacob et al.~\cite{jacob2018quantization} formalized integer-arithmetic
+inference with affine quantization of weights and activations. Nagel et
+al.~\cite{nagel2021whitepaper} and Krishnamoorthi~\cite{krishnamoorthi2018quantizing} review
+practical PTQ, including per-channel weight quantization and calibration of activation ranges. Wu
+et al.~\cite{wu2020integer} compare calibration methods for PTQ and find that max calibration,
+which our toolchain uses, gives inconsistent accuracy, with large drops for networks with outlier
+activations. They report one aggregate metric per model. INT8 can also be used
+during training~\cite{zhu2020int8}, but this changes the trained model and is outside our scope.
 
-\emph{Quantization of detectors.} Kim et al.~\cite{kim2026inlier} study PTQ specifically for
-object detection models and address the influence of outlier activations on calibration. Like
-most work in this area, they propose a quantization method. The present study instead measures
-the behaviour of a standard deployment toolchain~\cite{ultralytics_tensorrt}.
-
-\emph{Small objects in aerial imagery.} VisDrone~\cite{zhu2022visdrone} is a widely used benchmark
-for detection in drone imagery, and the VisDrone-DET2021 challenge results~\cite{cao2021visdrone}
-document how difficult small, densely packed objects remain. Akyon et al.~\cite{akyon2022sahi}
-address small objects through slicing-aided inference, which highlights the role of object scale.
-The COCO small/medium/large definition~\cite{lin2014coco} is the standard way to report accuracy
-by size.
-
-\emph{Non-uniform effects of compression.} Hooker et al.~\cite{hooker2019forget} showed that
-pruned and quantized classifiers lose accuracy disproportionately on a subset of examples. Whether
-an analogous, size-related subset exists for detection under INT8 PTQ in aerial imagery is the
-question investigated here.
+\emph{Detectors and small objects.} Kim et al.~\cite{kim2026inlier} propose a new PTQ method that
+handles outlier activations in object detectors. We instead measure a standard deployment
+toolchain~\cite{ultralytics_tensorrt}. The VisDrone
+benchmark~\cite{zhu2022visdrone} and the VisDrone-DET2021 challenge
+results~\cite{cao2021visdrone} show that small, densely packed objects remain difficult, and
+Akyon et al.~\cite{akyon2022sahi} address them with slicing-aided inference. Whether object
+size defines a subset of the kind Hooker et al.~\cite{hooker2019forget} found for compressed
+classifiers is the question studied here.
 
 % =========================================================================== METHOD
 \section{Method}
 \label{sec:method}
 
-\subsection{Study Design}
-This study examines whether INT8 post-training quantization causes a larger relative
-detection-accuracy loss for small objects than for larger objects in aerial imagery. Precision is
-the experimental factor, with a TensorRT FP32 engine as the baseline, an INT8 engine as the
-primary treatment, and an FP16 engine as a control. The FP16 control is needed because the
-toolchain runs the non-quantized layers of the INT8 engine in FP16. Object size is an observed
-moderator. The comparison is paired: all precision conditions are evaluated on the same images.
+\subsection{Research Design}
+We ran a quantitative controlled experiment because the question concerns a measurable causal
+effect of one manipulated factor, precision. A TensorRT FP32 engine is the baseline, an INT8 engine the
+treatment and an FP16 engine a control. The control is needed because the toolchain runs the
+non-quantized layers of the INT8 engine in FP16. The design is paired: all conditions come from
+the same checkpoint and ONNX graph and are evaluated on the same images with the same settings.
 The design, metrics, size groups and analysis were fixed in a pre-registration dated 7 Oct.\
 2026, before any model was trained. It is published with the code and a deviation
 log~\cite{hussaini2026researchmethodology}.
 
-For each object-size group $g$, relative AP loss is defined as
+For each object-size group $g$, the relative AP loss is
 \begin{equation}
 \mathrm{RelDrop}_{g} =
 \frac{\mathrm{AP}^{\mathrm{FP32}}_{g} - \mathrm{AP}^{\mathrm{INT8}}_{g}}
@@ -162,138 +144,128 @@ The primary contrast is
 D = \mathrm{RelDrop}_{\mathrm{small}} - \mathrm{RelDrop}_{\mathrm{non\text{-}small}}.
 \label{eq:size-interaction}
 \end{equation}
-The alternative hypothesis is $D>0$, a greater relative quantization loss for small objects. The
-null hypothesis is $D\leq 0$. The relative loss is used because small objects start from a much
-lower AP. The same proportional harm therefore produces a smaller absolute drop, which would bias
-an absolute comparison against the alternative hypothesis.
+We use the relative loss because small objects start from a much lower AP. The same proportional
+harm then gives a smaller absolute drop, so an absolute comparison would be biased against $H_1$.
 
-\subsection{Dataset and Annotation Processing}
-The experiment uses VisDrone2019-DET~\cite{zhu2022visdrone}. The training split is used for
-fine-tuning and INT8 calibration, the validation split for checkpoint selection and development,
-and test-dev only for the final evaluation. The splits contain 6,471 training, 548 validation and
-1,610 test-dev images. Dataset archives are verified by SHA-256 before processing.
+\subsection{Dataset and Inclusion Criteria}
+We used VisDrone2019-DET~\cite{zhu2022visdrone}, a standard drone benchmark dominated by small
+objects, with 6,471 training, 548 validation and 1,610
+test-dev images. The training split was used for fine-tuning and INT8 calibration, the validation
+split for checkpoint selection and development, and test-dev only for the final evaluation. The
+dataset archives were verified by SHA-256.
 
-Annotations are converted to YOLO format for training and to COCO JSON for evaluation. VisDrone
-annotations with score zero, which comprise the ignored regions and the ``others'' category, are
-excluded. Bounding boxes are clipped to the image boundaries, and boxes with a width or height
-below one pixel after clipping are discarded. Detections on excluded ignored regions are therefore treated as
-false positives for every condition. As a result, absolute AP values are not directly comparable
-with the official VisDrone evaluation toolkit~\cite{cao2021visdrone}, although the paired
-comparison is unaffected.
+Annotations are converted to YOLO format for training and to COCO JSON for evaluation. All images
+of every split are used, without sampling. An annotation is included only if its VisDrone score
+is one. Score-zero annotations, which are the ignored regions and the ``others'' category (2,180
+and 265 in test-dev), are excluded, so detections on ignored regions count as false positives in
+every condition. Absolute AP is therefore not directly comparable with the official VisDrone
+toolkit~\cite{cao2021visdrone}, but the paired comparison is unaffected. Boxes are clipped to the
+image, and boxes with a width or height below one pixel are discarded (one box, in the training
+split). Eight automatic integrity checks passed, for example that every image decodes, that the
+YOLO and COCO labels contain identical boxes and that no image appears in two splits.
 
-Object size is the area of the clipped ground-truth box in original image pixels. Following the
-COCO convention~\cite{lin2014coco}, small objects have an area below $32^2=1{,}024$ pixels and
-non-small objects an area of at least $1{,}024$ pixels. The secondary groups are medium
-($32^2 \leq \mathrm{area} < 96^2$) and large ($\mathrm{area} \geq 96^2=9{,}216$ pixels).
-After processing, test-dev contains 75,102 objects, of which 67.7\% are small, 29.1\% medium and
-3.2\% large (60.5\%, 34.0\% and 5.5\% in the training split). Size and class are related:
-pedestrians, people and motors make up 58.5\% of small but only 14.4\% of non-small objects,
-whereas cars, vans, trucks and buses make up 38.3\% and 82.1\%, respectively.
-Size-specific evaluation follows the COCO rule: ground truths outside a size range, detections
-matched to them, and unmatched detections outside the range are ignored for that range. Unlike
-slicing-aided approaches~\cite{akyon2022sahi}, every precision condition uses the same full-image
-input; tiling is not part of the study.
+Object size is the area of the clipped ground-truth box in original image pixels. Following
+COCO~\cite{lin2014coco}, small objects have an area below $32^2=1{,}024$ pixels and non-small
+objects an area of at least $1{,}024$ pixels. The secondary groups are medium
+($32^2 \leq \mathrm{area} < 96^2$) and large ($\mathrm{area} \geq 96^2=9{,}216$ pixels). Test-dev
+contains 75,102 objects, of which 67.7\% are small, 29.1\% medium and 3.2\% large (60.5\%, 34.0\%
+and 5.5\% in the training split). Size and class are related. Pedestrians, people and motors make
+up 58.5\% of small but only 14.4\% of non-small objects, and cars, vans, trucks and buses 38.3\%
+and 82.1\%, respectively. Size-specific evaluation follows the COCO rule: ground truths outside a
+size range, detections matched to them, and unmatched detections outside the range are ignored
+for that range.
 
-\subsection{Model Training and Engine Construction}
-The detector is YOLOv8n~\cite{jocher2023yolov8}, the smallest YOLOv8 variant and a typical
-choice for embedded hardware, initialized from COCO-pretrained weights. One model is fine-tuned on the
+\subsection{Procedure}
+The experiment was run in five steps.
+(1)~A pilot run (three epochs on 10\% of the training split, evaluated on validation) tested the
+whole pipeline. Its results are not used.
+(2)~YOLOv8n~\cite{jocher2023yolov8}, the smallest YOLOv8 variant and a typical choice for
+embedded hardware, was initialized from COCO-pretrained weights and fine-tuned once on the
 training split at $640 \times 640$ for 100 epochs, with batch size 16, random seed 0 and
-deterministic training. Other options use the Ultralytics defaults, and no hyper-parameter search
-is performed. The best checkpoint on the validation split is frozen and used to build all
-precision variants.
+deterministic training. Other options used the Ultralytics defaults, without hyper-parameter
+search. The best checkpoint on the validation split was frozen.
+(3)~The checkpoint was exported to ONNX with a static input of $1 \times 3 \times 640 \times 640$,
+and a hash check confirmed that this graph was identical for all conditions. It was converted to
+FP32, FP16 and INT8 TensorRT engines with the documented Ultralytics
+workflow~\cite{ultralytics_tensorrt}. For INT8, NVIDIA ModelOpt inserts explicit
+quantize/dequantize nodes with max calibration, and unquantized layers run in FP16. Three
+calibration sets were sampled, one per seed (0, 1 and 2), each with 512 training images drawn
+uniformly at random. Calibration and evaluation use the same $640 \times 640$ letterbox
+preprocessing. Seed 0 is the primary INT8 condition, and seeds 1 and 2 are robustness checks.
+(4)~All engines were evaluated on the validation split, which was the only split used for
+development and debugging.
+(5)~Each engine was evaluated on test-dev exactly once (12 Oct.\ 2026), and the per-image match
+records were stored for the bootstrap.
 
-The frozen checkpoint is exported to ONNX with a static input of $1 \times 3 \times 640 \times
-640$ and converted to TensorRT engines with the documented Ultralytics export
-workflow~\cite{ultralytics_tensorrt}. The exported ONNX graph is identical for all conditions
-(verified by hash) before the precision-specific conversion. Engines are built in FP32, FP16 and
-INT8. Three independent INT8 calibration sets are
-sampled, one per seed (0, 1 and 2), each consisting of 512 training images drawn uniformly at
-random. Calibration and evaluation use the same $640 \times 640$ letterbox preprocessing. The
-primary INT8 comparison uses calibration seed 0, and seeds 1 and 2 serve as robustness checks.
-For INT8, NVIDIA ModelOpt inserts explicit quantize/dequantize nodes with max calibration, and
-layers that are not quantized run in FP16.
+\subsection{Measures and Implementation Checks}
+The PyTorch checkpoint and all engines use the same inference settings:
+confidence threshold 0.001, non-maximum suppression (NMS) IoU threshold 0.7, at most 500
+detections per image, batch size 1, and square $640 \times 640$ input. The primary measure is
+COCO-style AP averaged over IoU thresholds from 0.50 to 0.95 (AP@[.5:.95]), because its strict
+thresholds also capture the localization errors that motivate the hypothesis. AP at IoU 0.50
+(AP@0.5), which mainly reflects whether objects are found, is secondary. Both are reported
+overall and by size group. Predictions are matched to ground truth with pycocotools, and our AP
+recomputation must agree with pycocotools to within $10^{-9}$. We also compare the PyTorch FP32
+checkpoint with the TensorRT FP32 engine, and our results with the Ultralytics validation
+metrics.
 
-\subsection{Evaluation Measures}
-The frozen PyTorch checkpoint and every TensorRT engine are evaluated with identical inference
-settings: confidence threshold 0.001, non-maximum suppression (NMS) IoU threshold 0.7, at most
-500 detections per image, batch size 1, and square $640 \times 640$ input. The primary accuracy
-measure is COCO-style AP averaged over IoU thresholds from 0.50 to 0.95 (AP@[.5:.95]); AP at IoU
-0.50 (AP@0.5) is secondary. Evaluation is reported overall and by size group.
-
-Predictions are matched to ground truth with pycocotools, and the per-image match records are
-stored for the bootstrap. The implementation's AP recomputation must agree with pycocotools to
-within $10^{-9}$. As further implementation checks, the PyTorch FP32 checkpoint is compared with
-the TensorRT FP32 engine, and the results are compared with Ultralytics' validation metrics. All
-development and debugging used the validation split. Each engine was evaluated on test-dev
-exactly once (12 Oct.\ 2026), after all engines had been built and evaluated on the validation
-split. The confirmatory comparison is TensorRT FP32 versus INT8
-calibration seed 0 on test-dev.
-
-\subsection{Statistical Analysis}
+\subsection{Analysis Plan}
 AP is computed from detections ranked across the whole test set, so there are no independent
-per-image AP values for a classical paired test. A paired nonparametric
-bootstrap~\cite{efron1993bootstrap} is therefore used, with the image as the resampling unit. It
-draws 2,000 resamples of the 1,610 test-dev images with replacement (random seed 0). The same
-resampled image indices are used for every precision condition and contrast, which preserves the
-pairing. For each resample, AP is recomputed by size group from the stored match records, without
-re-matching detections.
+per-image AP values for a classical paired test. We therefore use a paired nonparametric
+bootstrap~\cite{efron1993bootstrap} with the image as the resampling unit. It draws 2,000
+resamples of the 1,610 test-dev images with replacement (random seed 0), which gives a Monte
+Carlo error of about 0.06 percentage points for the interval limits. Every condition uses the same resampled image indices, which keeps the
+pairing, and AP is recomputed by size group from the stored match records without re-matching.
 
 The confirmatory statistic is $D$ in~\eqref{eq:size-interaction} for FP32 versus INT8 seed 0 on
 AP@[.5:.95], with a two-sided 95\% percentile bootstrap confidence interval. If the lower bound is
-above zero, the null hypothesis is rejected in favour of a greater relative loss for small
-objects. If the interval contains zero, the result is inconclusive, and if the upper bound is
-below zero, the result is contrary to the alternative hypothesis. Because $H_1$ is directional,
-this rule corresponds to a one-sided test at $\alpha=0.025$.
+above zero, $H_0$ is rejected in favor of a greater relative loss for small objects. If the
+interval contains zero, the result is inconclusive. If the upper bound is below zero, the result
+is contrary to $H_1$. Because $H_1$ is directional, this rule corresponds to a one-sided test at
+$\alpha=0.025$.
 
-The percentile bootstrap makes no normality assumption about $D$, which is a ratio-based
-quantity with an unknown sampling distribution. It does assume that test images are independent
-and that the resampled AP is well defined. Both are checked: AP must be finite for every
-resample, the shape of the bootstrap distribution is inspected for skew and bias, and possible
-dependence between images of the same scene is discussed as a validity threat. The image is
-used as the unit because VisDrone test-dev file names do not reliably identify video sequences,
-so no sound cluster structure was available. This was decided from the labels alone, before any
-model output was produced.
+The percentile bootstrap makes no normality assumption about $D$, a ratio-based quantity with an
+unknown sampling distribution. It does assume that test images are independent and that the
+resampled AP is well defined. We check that AP is finite in every resample and inspect the
+bootstrap distribution for skew and bias. The image was chosen as the unit because VisDrone
+test-dev file names do not reliably identify video sequences. This was decided from the labels
+alone, before any model output existed. Dependence between images of the same scene is examined
+with a post-hoc cluster bootstrap.
 
-All other comparisons are exploratory and are reported with confidence intervals only. These are
-absolute AP drops, AP@0.5, small/medium/large AP, calibration seeds 1 and 2, and the FP16 control.
-The INT8 result is considered directionally robust if $D$ has the same sign for all three
-calibration seeds. The FP16 control shows whether a size-dependent effect is specific to INT8: a
-similar pattern under FP16 would prevent attributing it to INT8 alone. Exploratory intervals are
-not adjusted for multiplicity and are therefore not used for hypothesis testing. The implementation of
-training, conversion, evaluation and analysis is available in the project
-repository~\cite{hussaini2026researchmethodology}.
+All other comparisons are exploratory, reported with unadjusted confidence intervals and not used
+for hypothesis testing:
+absolute AP drops, AP@0.5, small, medium and large AP, calibration seeds 1 and 2, and the FP16
+control. The INT8 result counts as directionally robust if $D$ has the same sign for all three
+calibration seeds. If FP16 showed a similar size pattern, the effect could not be attributed to
+INT8 alone.
 
-\subsection{Experimental Setup and Deviations}
-All main-study training, engine builds and evaluations ran on one NVIDIA GeForce RTX 5080 (16\,GB) in one
-fixed environment: Python 3.11.9, PyTorch 2.10.0+cu128, Ultralytics 8.4.174 and TensorRT
-11.3.0.99. Ultralytics and TensorRT match the pre-registration. Python and PyTorch differ from
-the versions in the project's setup instructions (3.12 and 2.14.1); every run log from the first
-training onward shows the versions actually used. The pre-registered latency benchmark, a
-secondary outcome, was not implemented. As the pre-registered fallback allows, only the
-per-image inference times recorded by Ultralytics during evaluation are reported. Both
-deviations are listed in the deviation log of the pre-registration, which was completed after
-the experiment. Neither affects the confirmatory analysis.
-
-The study uses only a public benchmark released for research~\cite{zhu2022visdrone}. It involves
-no human participants, and no images are redistributed or used to identify people.
+\subsection{Setup, Deviations and Ethics}
+All main-study training, engine builds and evaluations ran on one NVIDIA GeForce RTX 5080
+(16\,GB) in one fixed environment: Python 3.11.9, PyTorch 2.10.0+cu128, Ultralytics 8.4.174 and
+TensorRT 11.3.0.99. Ultralytics and TensorRT match the pre-registration. Python and PyTorch differ
+from the versions in the original README (3.12 and 2.14.1), and every run log from the first
+training onward records the versions actually used. The pre-registered latency benchmark, a
+secondary outcome, was not implemented, so we report the inference times recorded by
+Ultralytics, as the pre-registered fallback allows. These deviations (D1, D2), a re-run of the
+pilot on validation only (D3) and the post-hoc cluster bootstrap (D4) are recorded in a deviation
+log written after the experiment from the run logs. None of them affects the confirmatory
+analysis. The study uses
+only a public research benchmark~\cite{zhu2022visdrone}, involves no human participants, and does
+not redistribute images or use them to identify people.
 
 % =========================================================================== RESULTS
 \section{Results}
 \label{sec:results}
 
-\subsection{Test-Set Detection Accuracy}
-The final evaluation covered 1,610 test-dev images containing 75,102 retained ground-truth
-objects. Table~\ref{tab:ap-results} reports AP@[.5:.95] overall and for all size groups shown in
-Fig.~\ref{fig:ap-size}; the non-small group is the union of the medium and large groups. Values
-are on a 0--100 scale, and confidence intervals are 95\% paired image-bootstrap percentile
-intervals. INT8 seed 0 had lower point estimates than FP32 in every group. In absolute terms, INT8
-lost 0.43 AP points for small objects and 1.39 points for non-small objects.
-
+\subsection{Test-Dev Detection Accuracy}
+Table~\ref{tab:ap-results} and Fig.~\ref{fig:ap-size} report AP@[.5:.95] overall and by size
+group. INT8 seed 0 had lower point estimates than FP32 in every group. In absolute terms, INT8
+lost 0.43 AP points for small objects and 1.39 AP points for non-small objects.
 
 \begin{table}[!t]
-\caption{Test-dev AP@[.5:.95] by object-size group. Point estimates with 95\% paired-bootstrap
-confidence intervals, on a 0--100 scale. Relative losses in the text are computed from unrounded
-AP values and can differ slightly from ratios of the rounded values shown here.}
+\caption{Test-dev AP@[.5:.95] by object-size group (0--100 scale), with 95\% paired-bootstrap
+confidence intervals. Non-small is the union of medium and large. Relative losses in the text
+are computed from unrounded AP values and can differ slightly from ratios of the values shown.}
 \label{tab:ap-results}
 \centering
 \footnotesize
@@ -319,18 +291,17 @@ Error bars show 95\% paired-bootstrap confidence intervals.}
 \label{fig:ap-size}
 \end{figure}
 
-\subsection{Confirmatory Size-Dependent Loss}
+\subsection{Confirmatory Test}
 For INT8 seed 0, the relative AP loss was 6.43\% for small objects and 5.47\% for non-small
-objects (Fig.~\ref{fig:relative-loss}). Their difference was $D=+0.96$ percentage points, with a
-95\% confidence interval of $[-0.81,\,+3.03]$ percentage points. Because the interval contains
-zero, the pre-registered result is inconclusive and does not support the hypothesis that INT8
-causes a larger relative AP loss for small objects. Fig.~\ref{fig:d-bootstrap} shows the
-bootstrap distribution of the primary contrast.
+objects (Fig.~\ref{fig:relative-loss}). The difference was $D=+0.96$ percentage points, with a
+95\% confidence interval of $[-0.81,\,+3.03]$ percentage points. The interval contains zero, so
+the pre-registered result is inconclusive and $H_1$ is not supported.
+Fig.~\ref{fig:d-bootstrap} shows the bootstrap distribution of $D$.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig3_relative_drop_AP50_95.pdf}
-\caption{Relative AP@[.5:.95] loss versus FP32 by object-size group for the three INT8
+\caption{Relative AP@[.5:.95] loss (\%) versus FP32 by object-size group for the three INT8
 calibration seeds and FP16. Error bars show 95\% paired-bootstrap confidence intervals. The
 primary comparison is INT8 seed 0 versus FP32.}
 \label{fig:relative-loss}
@@ -339,16 +310,18 @@ primary comparison is INT8 seed 0 versus FP32.}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{figA_D_bootstrap.pdf}
-\caption{Paired-bootstrap distribution of $D$ for the primary FP32 versus INT8 seed 0 comparison.
-The solid line marks the point estimate, the dashed lines the 95\% confidence limits, and the zero
-line no difference in relative loss by size.}
+\caption{Paired-bootstrap distribution of $D$ (percentage points) for the primary FP32 versus
+INT8 seed 0 comparison. The solid line marks the point estimate, the dashed lines the 95\%
+confidence limits, and the zero line no difference in relative loss by size.}
 \label{fig:d-bootstrap}
 \end{figure}
 
 \begin{table}[!t]
-\caption{Relative AP loss versus TensorRT FP32 (\%), the size contrast $D$ and its absolute
-counterpart $D_{\mathrm{abs}}$ (AP points), with 95\% paired-bootstrap confidence intervals, on
-AP@[.5:.95] unless marked AP50. The first row is the confirmatory test; all other rows are
+\caption{Relative AP loss versus TensorRT FP32 (\%) for small and non-small (Non-s.) objects,
+the size contrast $D$ (percentage points) and $D_{\mathrm{abs}}$, the absolute AP drop for small
+objects minus that for non-small objects (AP points), with 95\% paired-bootstrap confidence
+intervals. s0--s2 are INT8 calibration seeds 0--2. All rows use AP@[.5:.95] except the row marked
+AP50, which uses AP@0.5. The first row is the confirmatory test, and all other rows are
 exploratory.}
 \label{tab:contrasts}
 \centering
@@ -368,125 +341,131 @@ FP16             & 0.70 & 0.28 & $+0.42$ [$+0.07$, $+0.98$] & $-0.02$ [$-0.08$, 
 \end{table}
 
 \subsection{Exploratory Comparisons}
-Table~\ref{tab:contrasts} summarizes the exploratory contrasts. The point estimate of $D$ was
-positive for all three INT8 calibration seeds ($+0.96$, $+1.83$ and $+1.19$ percentage points),
-which meets the pre-registered criterion for directional robustness. All three intervals included
-zero, however, so the confirmatory finding remains inconclusive. The overall relative loss
+Table~\ref{tab:contrasts} lists the exploratory contrasts. The point estimate of $D$ was positive
+for all three calibration seeds ($+0.96$, $+1.83$ and $+1.19$ percentage points), which meets the
+pre-registered criterion for being directionally robust. All three intervals included zero,
+however. The overall relative loss
 varied more between seeds (5.4\%, 7.4\% and 7.0\%) than $D$ did. On AP@0.5, $D$ was close to zero
-for every seed. On the absolute scale, $D_{\mathrm{abs}}$ was negative for every seed with
-intervals excluding zero: in AP points, small objects lost less than non-small objects.
+for every seed. The absolute contrast $D_{\mathrm{abs}}$ was negative for every seed, with
+intervals excluding zero. In AP points, small objects lost less than non-small objects.
 
-The FP16 engine lost only 0.37\% of overall AP, which shows that TensorRT conversion itself
-costs little accuracy and that the INT8 loss comes from quantization. Its $D$ was $+0.42$
-percentage points with an interval just above zero, although $D_{\mathrm{abs}}$ was essentially
-zero. Because the primary INT8 interval includes zero, the pre-registered FP16 attribution rule
-is not triggered.
+The FP16 engine lost only 0.37\% of overall AP, so TensorRT conversion itself costs little
+accuracy and the INT8 loss comes mainly from quantization. The FP16 $D$ was $+0.42$ percentage points
+with an interval just above zero, while its $D_{\mathrm{abs}}$ was essentially zero. Because the
+primary INT8 interval includes zero, the pre-registered FP16 attribution rule is not triggered.
 
 \subsection{Assumption and Implementation Checks}
-All 2,000 resamples produced finite AP values for every condition and size group. The bootstrap
-distribution of $D$ (Fig.~\ref{fig:d-bootstrap}) is unimodal and nearly symmetric (skewness
-0.06), with a standard error of 0.99 percentage points. Its mean exceeds the point estimate by
-only 0.16 points. A normal-approximation interval (point estimate $\pm1.96$ standard errors,
-$[-0.99,\,+2.91]$) also contains zero, so the decision does not depend on the interval method.
-The implementation's AP matched pycocotools to within $2\times10^{-16}$ for every engine.
-TensorRT FP32 and PyTorch FP32 differed by less than $10^{-4}$ AP@[.5:.95] in every size group,
-so the TensorRT FP32 engine is a faithful baseline. Overall AP differed from Ultralytics' own
-validator by 0.0028--0.0029 for every TensorRT engine. The offset reflects a different AP implementation; it is
-nearly constant across conditions and therefore does not affect the paired contrasts.
+All 2,000 resamples gave finite AP values for
+every condition and size group. The bootstrap
+distribution of $D$ (Fig.~\ref{fig:d-bootstrap}) is unimodal and close to normal (skewness 0.06,
+excess kurtosis 0.01), with a standard error of 0.99 percentage points, and 12.5\% of the
+resamples had $D\le0$. Its mean exceeds the point estimate by 0.16 percentage points. A
+normal-approximation interval (point estimate $\pm1.96$ standard errors,
+$[-0.99,\,+2.91]$) also contains zero, so the decision does not depend on the interval method. As
+a post-hoc sensitivity check for dependence between images of the same scene, a cluster bootstrap
+with 2,000 resamples resampled the 61 filename prefixes, which we treat as possible scenes,
+instead of single images. It widened the interval of $D$ to
+$[-0.65,\,+4.14]$ (standard error 1.20 percentage points) without changing the decision, and the
+FP16 interval stayed above zero ($[+0.09,\,+0.90]$).
+
+Our AP matched pycocotools to within $2\times10^{-16}$ for every
+engine. TensorRT FP32 and PyTorch FP32 differed by less than $10^{-4}$ AP@[.5:.95] (0--1 scale) in every
+size group, so the TensorRT FP32 engine is a faithful baseline. Overall AP differed from the
+Ultralytics validator by 0.0028--0.0029 (0--1 scale) for every TensorRT engine. This offset comes from a
+different AP implementation and is nearly constant across conditions, so it does not affect the
+paired contrasts.
 
 \subsection{Latency}
-The controlled latency benchmark was not run (Section~\ref{sec:method}). The per-image
-inference times that Ultralytics recorded during test-dev evaluation were 0.77\,ms for FP32,
-0.42\,ms for FP16 and 0.69--0.71\,ms for the three INT8 engines. These times come from an
-uncontrolled protocol and are descriptive only.
+The per-image inference times recorded by Ultralytics during test-dev evaluation, an
+uncontrolled and descriptive measure, were 0.77\,ms for FP32, 0.42\,ms for FP16 and
+0.69--0.71\,ms for the three INT8 engines.
 
 % =========================================================================== DISCUSSION
 \section{Discussion}
 \label{sec:discussion}
 
-The results do not provide sufficient evidence that INT8 post-training quantization causes a
-greater relative detection-accuracy loss for small objects than for non-small objects. The
-relative loss was higher for small objects (6.43\%) than for non-small objects (5.47\%), but the
-difference of 0.96 percentage points had a 95\% confidence interval spanning zero. The primary
-hypothesis was therefore not supported. This finding is inconclusive; it is not evidence that the
-two groups are affected equally. The interval does, however, bound the effect. A size-dependent
-penalty larger than about 3 percentage points, meaning a small-object relative loss above roughly
-8.5\% against 5.5\% for non-small objects, is not compatible with the data. Compared with the
-overall INT8 loss of 5.4\%, any size-dependent component is therefore at most moderate.
+The hypothesis $H_1$ was not supported. This inconclusive result is not evidence that the two
+groups are affected equally, but the interval does bound the effect. A size-dependent penalty
+larger than about 4 percentage points (upper limits $+3.03$ under the image bootstrap and $+4.14$
+under the cluster bootstrap) is not compatible with the data. This corresponds to a small-object
+relative loss above roughly 8.5--9.6\% against 5.5\% for non-small objects. This bound is moderate next
+to the overall INT8 loss of 5.4\%. Hooker et
+al.~\cite{hooker2019forget} found disproportionate losses on subsets of examples for compressed
+classifiers, but we could not establish such a subset by object size. For this detector, the
+aggregate INT8 loss is a reasonable first guide to the loss on small objects, although
+deployments that depend on small objects should still evaluate them separately.
 
-The relative and absolute views point in different directions. Small objects lost proportionally
-slightly more, whereas non-small objects lost about three times more AP points (1.39 vs.\ 0.43).
-Statements that quantization ``hurts small objects more'' thus depend on the scale used. The
-relative scale was pre-registered because the baselines differ by a factor of about four. The
-mechanisms proposed in the introduction also act on different scales. Coarser activations would
-tend to make small objects disappear, which should show up at IoU 0.5. Localization jitter would
-mainly hurt small objects at high IoU thresholds. That $D$ was near zero on AP@0.5 but slightly
-positive on AP@[.5:.95] is weakly consistent with the second mechanism rather than the first,
-but the difference is well within the uncertainty.
+The relative and absolute views disagree. Small objects lost slightly more in proportion, while
+non-small objects lost about three times more AP points (1.39 vs.\ 0.43), so whether
+quantization ``hurts small objects more'' depends on the scale. The two mechanisms from the
+introduction also predict different patterns across IoU thresholds. Coarser activations would
+tend to make small objects disappear, which should show up at IoU 0.5, while localization jitter
+would mainly hurt small objects at high IoU thresholds. We found $D$ near zero on AP@0.5 but
+slightly positive on AP@[.5:.95]. This is weakly consistent with the localization mechanism, but
+the difference is well within the uncertainty.
 
-The positive estimates across all three calibration seeds indicate a consistent direction, but
-the seeds share the same model and test images and are not independent replications. The choice
-of calibration set changed the overall INT8 loss by two percentage points, which is larger than
-the size contrast itself. The FP16 control lost almost no accuracy overall, yet produced a small
-positive $D$ with an interval just above zero. Because the small-object FP16 loss amounts to only
-0.05 AP points, this relative difference is fragile. It may indicate that very small objects are
-sensitive to any reduction in precision, or it may be a chance finding among several uncorrected
-exploratory intervals. Outlier-sensitive calibration, as studied by Kim et
-al.~\cite{kim2026inlier}, is one possible mechanism for differences between calibration sets;
-this experiment does not test that mechanism.
+The three calibration seeds share the same model and test images, so their common direction is
+not an independent replication. The choice of calibration set changed the overall INT8 loss by
+two percentage points, more than the size contrast itself. This agrees with Wu et
+al.~\cite{wu2020integer}, who found max calibration inconsistent across networks with outlier
+activations. Outlier-sensitive calibration~\cite{kim2026inlier} is a plausible cause of these
+differences, but our experiment does not test it.
+
+The FP16 $D$ had an interval just above zero under both bootstraps, but its small-object loss is
+only 0.05 AP points, so this relative difference is fragile. Very small objects may be sensitive to any reduction in
+precision, or the result may be a chance finding among several uncorrected exploratory
+intervals.
 
 \subsection{Threats to Validity}
-\emph{Internal validity.} All conditions share one checkpoint, one ONNX graph, identical
-preprocessing and identical images, so precision is the only manipulated factor. TensorRT does,
-however, choose kernels and layer fusions per precision, and the INT8 engine runs its
-unquantized layers in FP16. The FP16 control bounds this toolchain effect but cannot fully
-separate it from quantization.
+\emph{Internal validity.} Precision is the only manipulated factor. TensorRT does, however, choose
+kernels and layer fusions per precision, and the INT8 engine runs its unquantized layers in FP16.
+The FP16 control bounds this toolchain effect but cannot fully separate it from quantization.
 
 \emph{Construct validity.} Object size is observed, not assigned. Small and non-small objects
-differ in class composition (Section~\ref{sec:method}), so $D$ measures size and class together. Small objects also start
-from a low AP of 0.066, which makes relative losses noisy. The excluded ignored regions mean that
-absolute AP differs from the official VisDrone protocol~\cite{cao2021visdrone}, although the
-same rule applies to every condition. Latency was not measured under a controlled protocol. The
-recorded times show no speed-up of INT8 over FP16 at batch size 1, so the study cannot show that
-the accuracy loss buys faster inference on this GPU.
+differ in class composition (Section~\ref{sec:method}), so $D$ measures size and class together.
+Small objects also start from a low AP of 6.62 AP points, which makes relative losses noisy. The
+uncontrolled
+timings show no speed-up of INT8 over FP16 at batch size 1, so the study cannot show
+that the accuracy loss buys faster inference.
 
-\emph{Conclusion validity.} The bootstrap captures variation across test images but not variation
-from model training or hardware. Correlation between images of the same scene would make its
-intervals too narrow, which would make a significant result less trustworthy. It does not explain
-the inconclusive one. The CI width of about 4 percentage points means the study could detect
-only a moderate size effect. Finally, the pre-registration was not deposited in a time-stamped
-registry, and the public repository was first committed after the test-dev analysis. Its date
-therefore rests on the authors' own record.
+\emph{Conclusion validity.} The bootstrap captures variation across test images, not from model
+training or hardware. The cluster bootstrap handles same-scene correlation only coarsely, because
+five filename prefixes hold 71\% of the images. With a CI width of about 4--5 percentage points,
+the study could detect only a moderate or larger size effect. The pre-registration was not deposited in a
+time-stamped registry, and the public repository was first committed after the test-dev analysis,
+so its date rests on our own record.
 
-\emph{External validity.} The experiment uses one YOLOv8n model, one dataset and a $640\times640$
-full-image input, which downscales the original images. Slicing-aided
-inference~\cite{akyon2022sahi} enlarges small objects in the input, so the findings should not
-be generalized to tiled pipelines, larger detectors or other quantization toolchains.
+\emph{External validity.} We used one YOLOv8n model, one dataset and a $640\times640$ full-image
+input, which downscales the original images. Slicing-aided inference~\cite{akyon2022sahi}
+enlarges small objects, so the findings should not be generalized to tiled pipelines, larger
+detectors or other quantization toolchains.
 
 % =========================================================================== CONCLUSION
 \section{Conclusion}
 \label{sec:conclusion}
 
-This study investigated whether INT8 post-training quantization causes a greater relative
-detection-accuracy loss for small objects than for non-small objects in aerial imagery. A
-fine-tuned YOLOv8n detector was evaluated as TensorRT FP32, FP16 and INT8 engines on the
-VisDrone2019-DET test-dev split, using size-specific AP and a paired image-level bootstrap.
+We tested whether INT8 post-training quantization of YOLOv8n causes a greater relative accuracy
+loss for small than for non-small objects on VisDrone2019-DET. The relative AP loss was 6.43\%
+for small and 5.47\% for non-small objects, a difference of 0.96 percentage points (95\% CI
+$[-0.81,\,+3.03]$), so a greater loss for small objects was not established. The consistent
+direction across three calibration seeds did not resolve this uncertainty. In absolute
+AP points, small objects lost less than non-small objects, with exploratory intervals excluding
+zero. The FP16 control lost
+almost no accuracy, so the overall loss of 5--7\% comes mainly from INT8 quantization, but the size
+pattern is not necessarily specific to INT8.
 
-For the primary FP32-versus-INT8 comparison, the relative AP loss was 6.43\% for small objects
-and 5.47\% for non-small objects. The difference of 0.96 percentage points had a 95\% confidence
-interval of $[-0.81,\,+3.03]$ percentage points. Since the interval includes zero, the analysis
-did not establish that small objects suffer a greater relative loss. The consistent direction
-across three calibration seeds did not resolve this uncertainty. In absolute AP points, small
-objects lost significantly less than non-small objects. The FP16 control lost almost no accuracy,
-so the overall loss of 5--7\% is caused by INT8 quantization, but the size pattern is not
-necessarily specific to INT8.
+Future work should test more models and datasets and measure inference speed under a controlled
+protocol. Size and class could be separated by estimating $D$ within one class, such as cars,
+which are numerous in both groups (15,112 small and 12,962 non-small), or by rescaling test
+images so that the same objects cross the size threshold.
 
-Overall, the experiment provides no conclusive evidence for a size-dependent INT8 accuracy loss
-under the evaluated conditions. Future work should test additional models and datasets and
-measure inference performance under a controlled protocol. Size and class could be separated by
-estimating $D$ within a single class, such as cars, which are numerous in both groups (15,112
-small and 12,962 non-small), or by rescaling test images so that the same objects cross the
-size threshold.
+\section*{Use of Generative AI}
+% Authors: extend this statement if AI was also used in other stages (for example, code or the pre-registration).
+Generative AI tools (Claude by Anthropic and ChatGPT by OpenAI) were used while preparing this
+article: to review, edit and shorten the text, to check the reported numbers and bootstrap
+statistics against the result files, to verify the reference details, to implement the post-hoc
+cluster bootstrap and to draft the deviation log from the run logs. The authors checked all AI
+output and take full responsibility for the content.
 
 % =========================================================================== REFERENCES
 \begin{thebibliography}{00}

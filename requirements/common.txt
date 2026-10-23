@@ -1,4 +1,4 @@
-# Packages shared by both TensorRT profiles. Install PyTorch FIRST (see README, Stage 2).
+# Packages shared by both TensorRT profiles. Install PyTorch FIRST (see README, Setup).
 # Pinned = the packages that define the experiment. Everything else is recorded by
 # scripts/01_environment_report.py (pip freeze) after installation.
 ultralytics==8.4.174

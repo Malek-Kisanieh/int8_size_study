@@ -1,18 +1,19 @@
-"""Stage 5 — Calibration sets and TensorRT engines (FP32, FP16, INT8 x 3 calibration seeds).
+"""Stage 5 - Calibration sets and TensorRT engines (FP32, FP16, INT8 x 3 calibration seeds).
 
-All engines are built from the SAME frozen checkpoint (Stage 4), with the same input shape
-(1x3x640x640, static), so that numerical precision is the only intended difference.
+All engines are built from the same frozen checkpoint (Stage 4) with the same static input shape
+(1x3x640x640), so numerical precision is the only intended difference. With TensorRT 11, INT8 uses
+explicit Q/DQ nodes inserted by NVIDIA ModelOpt (PREREGISTRATION.md section 4).
 
-Calibration (post-training quantization of activations), per seed in config.yaml:
+Calibration (post-training quantization of activations), one set per seed in config.yaml:
   * 512 images drawn uniformly at random from TRAIN with random.Random(seed) from the sorted file list
-  * the list is saved (results/<tag>/calibration/calib_seed<s>.txt) together with its object-size
-    statistics (needed for Table 2), and a small dataset YAML whose 'val' entry points to the list -
+  * the list is saved (results/<tag>/calibration/calib_seed<s>.txt) with its object-size
+    statistics, plus a small dataset YAML whose 'val' entry points to the list, because
     Ultralytics calibrates on the 'val' split of the YAML it receives
-  * preprocessing = Ultralytics' validation letterbox at 640, i.e. identical to evaluation
+  * preprocessing is Ultralytics' validation letterbox at 640, the same as in evaluation
 
-Each engine is built in its own folder (Ultralytics would otherwise overwrite model.engine), built
-ONCE, and hashed. Existing engines are never rebuilt unless --force is given (TensorRT builds are
-not bit-reproducible, so rebuilding creates a different artefact).
+Each engine is built once in its own folder (otherwise Ultralytics overwrites model.engine) and
+hashed. Existing engines are only rebuilt with --force, because TensorRT builds are not
+bit-reproducible and a rebuild gives a different artefact.
 
 Usage (from the project root):
     python scripts/06_build_engines.py --tag dev  2>&1 | tee results/engines_dev_console.log
@@ -172,8 +173,8 @@ def main() -> int:
         for line in record["engines"][cond]["log_evidence"]:
             print(f"      log: {line}")
 
-    # Informational: the FP32 ONNX graph exported from the same checkpoint should be identical for every
-    # condition. (If a toolchain step rewrites model.onnx in place, e.g. for INT8, that condition differs.)
+    # Informational: the ONNX graph exported from the checkpoint should be identical for every condition,
+    # unless a toolchain step (e.g. INT8 quantization) rewrites model.onnx in place.
     graphs = {c: e.get("onnx_graph_sha256", {}).get("model.onnx") for c, e in record["engines"].items()}
     record["model_onnx_graph_by_condition"] = graphs
     save_json(record, dirs["engines_record"])

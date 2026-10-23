@@ -1,20 +1,18 @@
 """Stage 2 — Environment and hardware report.
 
-Records everything about the machine and software that could influence the results:
-GPU, driver, CUDA, Python, package versions, PyTorch/TensorRT runtime checks, CPU, RAM, disk.
+Records the hardware and software that could affect the results: GPU, driver, CUDA,
+Python, package versions, PyTorch/TensorRT runtime checks, CPU, RAM and disk.
 
-The script uses ONLY the Python standard library at the top level, so it can be run
-twice:
-    1. before installing anything        ->  --label before_install
-    2. after installing the environment  ->  --label after_install
+Only the standard library is imported at the top level, so the script can run both
+before and after the environment is installed (--label before_install / after_install).
 
 Usage (from the project root):
     python scripts/01_environment_report.py --label before_install
 
 Outputs (results/environment/):
-    environment_<label>.json      machine-readable report (send this to your partner)
+    environment_<label>.json      full report
     nvidia_smi_<label>.txt        raw nvidia-smi output
-    pip_freeze_<label>.txt        exact versions of every installed Python package
+    pip_freeze_<label>.txt        versions of all installed Python packages
 """
 
 from __future__ import annotations
@@ -205,7 +203,7 @@ def onnxruntime_runtime() -> dict:
 
 
 def derived_notes(report: dict) -> list[str]:
-    """Plain-language observations that matter for the experiment design."""
+    """Short notes on blockers and settings that matter for the experiments."""
     notes = []
     smi = report["nvidia_smi"]
     if not smi.get("available"):
@@ -283,7 +281,7 @@ def main() -> int:
 
     path = save_json(report, out_dir / f"environment_{args.label}.json")
 
-    # ---- short human-readable summary
+    # ---- short console summary
     smi = report["nvidia_smi"]
     for i, g in enumerate(smi.get("gpus", [])):
         print(f"GPU {i}: {g.get('name')} | {g.get('memory.total')} | driver {g.get('driver_version')} "

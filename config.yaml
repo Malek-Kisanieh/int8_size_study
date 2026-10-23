@@ -1,9 +1,8 @@
 # =====================================================================================
-# Central experiment configuration — the single source of truth for every setting.
+# Experiment configuration. All scripts read their settings from this file only.
 #
-# Rule: scripts read their settings ONLY from this file. If a value must change after
-# the design was frozen (PREREGISTRATION.md, frozen 2026-10-07), record the change in
-# the "Deviation log" section of PREREGISTRATION.md with date and reason.
+# The design was frozen on 2026-10-07 (PREREGISTRATION.md). Any later change must be
+# recorded, with date and reason, in the deviation log (section 11) of PREREGISTRATION.md.
 # =====================================================================================
 
 project:
@@ -16,10 +15,10 @@ paths:                       # relative to the project root
   dataset_dir: data/VisDrone
   models_dir: models
   results_dir: results
-  ultralytics_config_dir: .ultralytics   # keeps Ultralytics settings/fonts inside the project
+  ultralytics_config_dir: .ultralytics   # keeps Ultralytics settings and fonts inside the project
 
 # -------------------------------------------------------------------------------------
-# Stage 2 — environment smoke test (functional check only, NOT an experiment)
+# Stage 2: environment smoke test (functional check only, not part of the experiment)
 # -------------------------------------------------------------------------------------
 smoke_test:
   weights_url: https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8n.pt
@@ -30,12 +29,12 @@ smoke_test:
   device: 0
 
 # -------------------------------------------------------------------------------------
-# Stage 3 — dataset
+# Stage 3: dataset
 # -------------------------------------------------------------------------------------
 dataset:
   name: VisDrone2019-DET
   base_url: https://github.com/ultralytics/assets/releases/download/v0.0.0
-  archives:                  # split name used in this project -> archive + SHA-256
+  archives:                  # project split name -> archive and SHA-256
     train:
       file: VisDrone2019-DET-train.zip
       sha256: 86a77eba93137bfc16e4993860de9245b0675c0dba0d3ab98fb458699e256f84
@@ -44,37 +43,37 @@ dataset:
       file: VisDrone2019-DET-val.zip
       sha256: abeea063037e5d20398837deb11084e652402a34ddf4f207bdf541a6f2a35ef9
       extracted_dir: VisDrone2019-DET-val
-    test:                    # = VisDrone2019-DET test-dev
+    test:                    # VisDrone2019-DET test-dev
       file: VisDrone2019-DET-test-dev.zip
       sha256: b28a94b06dfd9e36ce77ff8155fb82b9d2c030f198a76105933bd56c6ea6a68d
       extracted_dir: VisDrone2019-DET-test-dev
-  roles:                     # fixed roles of the splits (see PREREGISTRATION.md)
+  roles:                     # fixed split roles (see PREREGISTRATION.md)
     training_and_calibration_pool: train
     development: val
     final_evaluation: test
-  # Class index i (0-based, YOLO labels) corresponds to VisDrone category i+1 and to
-  # COCO-JSON category_id i+1 (this matches Ultralytics' prediction JSON for custom data).
+  # YOLO class index i (0-based) = VisDrone category i+1 = COCO-JSON category_id i+1.
+  # This matches the prediction JSON that Ultralytics writes for custom datasets.
   class_names: [pedestrian, people, bicycle, car, van, truck, tricycle, awning-tricycle, bus, motor]
   conversion:
-    skip_score_zero: true        # VisDrone score=0 marks "ignored regions" (cat 0) and "others" (cat 11)
-    skip_categories: [0, 11]     # also skipped if they ever appear with score=1
+    skip_score_zero: true        # score=0 marks "ignored regions" (cat 0) and "others" (cat 11)
+    skip_categories: [0, 11]     # skipped even if they appear with score=1
     clip_boxes_to_image: true
     min_box_side_px: 1           # boxes thinner than this after clipping are dropped
   sanity_checks:
     n_sample_images_per_split: 6
     sample_seed: 0
-    min_objects_per_primary_bin_test: 500   # warning threshold only
+    min_objects_per_primary_bin_test: 500   # only triggers a warning
 
 # -------------------------------------------------------------------------------------
-# Object size definition (frozen) — area = w*h of the ground-truth box in ORIGINAL image px
+# Object size bins (frozen). Area = w*h of the ground-truth box in original image pixels.
 # -------------------------------------------------------------------------------------
 object_size:
   small_upper_exclusive_px2: 1024     # small:  area <  32^2
-  large_lower_inclusive_px2: 9216     # large:  area >= 96^2 ; medium: 32^2 <= area < 96^2
+  large_lower_inclusive_px2: 9216     # large:  area >= 96^2; medium: 32^2 <= area < 96^2
   primary_contrast: [small, non_small]   # non_small: area >= 32^2
 
 # -------------------------------------------------------------------------------------
-# Stage 4 — model / fine-tuning (implemented in a later stage)
+# Stage 4: model and fine-tuning
 # -------------------------------------------------------------------------------------
 model:
   architecture: yolov8n
@@ -88,13 +87,13 @@ training:
   seed: 0
   deterministic: true
   device: 0
-  # all other hyper-parameters: Ultralytics defaults (no tuning; recorded automatically)
+  # Other hyperparameters use Ultralytics defaults (no tuning; logged automatically).
   dev_run:                    # tag 'dev' only: quick pipeline test, never reported
     epochs: 3
     fraction: 0.1
 
 # -------------------------------------------------------------------------------------
-# Stage 5 — engines (implemented in a later stage)
+# Stage 5: TensorRT engines
 # -------------------------------------------------------------------------------------
 export:
   format: engine
@@ -103,7 +102,7 @@ export:
   dynamic: false
   simplify: true
   device: 0
-  conditions:                 # name -> Ultralytics `quantize` value
+  conditions:                 # condition name -> Ultralytics `quantize` value
     fp32: null
     fp16: 16
     int8: 8
@@ -115,7 +114,7 @@ calibration:
   primary_seed: 0
 
 # -------------------------------------------------------------------------------------
-# Stage 6 — evaluation (implemented in a later stage)
+# Stage 6: evaluation
 # -------------------------------------------------------------------------------------
 evaluation:
   final_split: test
@@ -130,19 +129,22 @@ evaluation:
   secondary_metrics: [AP50]
 
 # -------------------------------------------------------------------------------------
-# Stage 8 — statistics (implemented in a later stage)
+# Stage 8: statistics
 # -------------------------------------------------------------------------------------
 statistics:
   bootstrap_reps: 2000
   ci_level: 0.95
   bootstrap_seed: 0
-  resampling_unit: image      # 'sequence' only if decided after Stage 3 (see PREREGISTRATION.md)
+  # Pre-registered unit: 'image'. A post-hoc cluster bootstrap over filename prefixes
+  # is in scripts/09_cluster_bootstrap.py (deviation D4).
+  resampling_unit: image
   primary_comparison:
     baseline: fp32
     treatment: int8_seed0
 
 # -------------------------------------------------------------------------------------
-# Stage 7 — latency (implemented in a later stage)
+# Stage 7: latency. Never implemented (deviation D2 in PREREGISTRATION.md section 11).
+# The settings below are the planned benchmark and are not read by any script.
 # -------------------------------------------------------------------------------------
 latency:
   conditions: [fp32, int8_seed0]

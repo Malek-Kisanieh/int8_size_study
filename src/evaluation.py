@@ -1,21 +1,19 @@
-"""COCO-style evaluation by object size, and the fast AP recomputation used by the bootstrap.
+"""COCO evaluation by object size, and the fast AP recomputation used by the bootstrap.
 
-How the pieces fit together
----------------------------
-1. ``run_cocoeval``   pycocotools does ALL matching between detections and ground truth, once per
-                      condition, with our size bins as COCO "area ranges".
-2. ``ap_from_cocoeval``  reads AP@[.5:.95] / AP@0.5 per size bin from pycocotools' own result.
-3. ``extract_match_groups``  stores, per (category, size bin), every detection's score and whether it
-                      is a true or false positive at each IoU threshold, plus the number of ground-truth
-                      objects per image. This is all the information AP needs.
-4. ``ap_weighted``    recomputes AP from those records when every image gets a weight
-                      (= how often it was drawn in a bootstrap resample). With all weights = 1 it
-                      reproduces pycocotools exactly; this is checked every time (``validate_groups``).
+1. ``run_cocoeval``          pycocotools matches detections to ground truth once per condition,
+                             with our size bins as COCO area ranges.
+2. ``ap_from_cocoeval``      reads AP@[.5:.95] and AP@0.5 per size bin from the pycocotools result.
+3. ``extract_match_groups``  stores, per (category, size bin), each detection's score and TP/FP flag
+                             at every IoU threshold, plus the number of ground-truth objects per
+                             image. This is everything AP needs.
+4. ``ap_weighted``           recomputes AP when each image has a weight (how often it was drawn in a
+                             bootstrap resample). With all weights = 1 it reproduces pycocotools
+                             exactly, which ``validate_groups`` checks on every run.
 
-Size bins (frozen in PREREGISTRATION.md): area = w*h of the ground-truth box in original pixels.
-    small < 1024 <= medium < 9216 <= large ;  non_small = medium + large
-Ground-truth areas are integers in VisDrone (verified in Stage 3, check C4), so the bin edges are put
-at x.5 (1023.5, 9215.5). This makes the bins disjoint and implements "area < 1024" exactly.
+Size bins (fixed in PREREGISTRATION.md), area = w*h of the ground-truth box in original pixels:
+    small < 1024 <= medium < 9216 <= large;  non_small = medium + large
+VisDrone box areas are integers (Stage 3, check C4), so the bin edges are set at 1023.5 and 9215.5.
+This keeps the bins disjoint and implements "area < 1024" exactly.
 """
 
 from __future__ import annotations

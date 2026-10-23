@@ -1,10 +1,10 @@
-"""Stage 8 — Statistical analysis: paired image bootstrap, hypothesis decision, tables, figures.
+"""Stage 8 - Statistical analysis: paired image bootstrap, hypothesis decision, tables, figures.
 
 Input: results/<tag>/evaluation/<split>/<condition>/{metrics.json, matches.npz} from Stage 6.
 
 Method (frozen in PREREGISTRATION.md §7):
-  * unit = test image; B resamples of all images with replacement (seed from config.yaml)
-  * the SAME resampled image sets are used for every condition -> paired comparison
+  * unit = test image; B resamples of all images with replacement (B and seed from config.yaml)
+  * the same resampled image sets are used for every condition, so the comparison is paired
   * per resample: AP per size bin for every condition (exact COCO AP, see src/evaluation.py)
   * RelDrop_g = (AP_g^FP32 - AP_g^treatment) / AP_g^FP32 ;  D = RelDrop_small - RelDrop_non_small
   * 95% percentile confidence intervals
@@ -280,7 +280,7 @@ def make_figures(conds, point, boot, D, level, fig_dir, banner):
             fig.savefig(fig_dir / f"fig3_relative_drop_{m}.{ext}", dpi=200)
         plt.close(fig)
 
-    if ("int8_seed0", "AP50_95") in D:  # Appendix: bootstrap distribution of D
+    if ("int8_seed0", "AP50_95") in D:  # Figure A: bootstrap distribution of D
         d, lo, hi, samples = D[("int8_seed0", "AP50_95")]
         fig, ax = plt.subplots(figsize=(6, 3.4))
         ax.hist(100 * samples[np.isfinite(samples)], bins=60, color="0.6", edgecolor="white", linewidth=0.3)

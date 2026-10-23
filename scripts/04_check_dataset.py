@@ -12,13 +12,13 @@ Checks (each reported as PASS / WARN / FAIL):
   C7  enough test objects in each primary size bin (warning only)
   C8  images with more than 100 / 500 objects (justifies max_det = 500 instead of COCO's 100)
 
-Descriptive outputs (labels only - no model is involved, so this is allowed before freezing):
+Descriptive outputs (labels only, no model involved):
   results/dataset/dataset_checks.json      all checks + summary statistics
-  results/dataset/size_bin_counts.csv      objects per split and size bin   (paper Table 2)
+  results/dataset/size_bin_counts.csv      objects per split and size bin
   results/dataset/class_counts.csv         objects per split and class
   results/dataset/class_by_size_test.csv   class x size bin for test (size/class confounding)
   results/dataset/sequence_groups.csv      images per filename prefix (possible video sequences)
-  results/dataset/figures/fig1_size_distribution_test.(png|pdf)                (paper Figure 1)
+  results/dataset/figures/fig1_size_distribution_test.(png|pdf)
   results/dataset/figures/size_distribution_all_splits.png
   results/dataset/figures/samples_<split>.png  random images with boxes coloured by size bin
 
@@ -176,7 +176,7 @@ def check_coco_consistency(split, coco_path, yolo_boxes, tol_px=0.05):
 
 
 def check_pycocotools(coco_path):
-    """C5: the official COCO API can index the file (this is what Stage 6 will use)."""
+    """C5: the official COCO API (used for evaluation in Stage 6) can index the file."""
     import contextlib
     import io
 
@@ -367,7 +367,8 @@ def main() -> int:
     checks.add("C8", "max_det = 500 is sufficient for the evaluation splits (no val/test image > 500 objects)",
                "WARN" if any(dense[s]["images_over_500"] for s in ("val", "test")) else "PASS", dense)
 
-    # filename prefix = possible source video sequence (relevant for the optional sequence bootstrap)
+    # filename prefix = possible source video sequence (cluster unit in the post-hoc
+    # cluster bootstrap, scripts/09_cluster_bootstrap.py, deviation D4)
     seq_rows, seq_summary = [], {}
     prefixes = {s: Counter(r["sequence_prefix"] for r in image_rows if r["split"] == s) for s in splits}
     for s, cnt in prefixes.items():

@@ -1,16 +1,16 @@
-"""Stage 4 — Fine-tune YOLOv8n on VisDrone train and freeze the FP32 checkpoint.
+"""Stage 4 - Fine-tune YOLOv8n on VisDrone train and freeze the FP32 checkpoint.
 
-This creates THE model of the study. Post-training quantization (Stage 5) starts from this frozen
-checkpoint; it is never retrained afterwards.
+This is the only model trained in the study. Post-training quantization (Stage 5) starts from
+this frozen checkpoint, and it is never retrained.
 
   * starts from the COCO-pretrained yolov8n.pt (SHA-256 verified)
-  * trains on train, selects the best epoch on val (Ultralytics default "best.pt"), never sees test
-  * settings come only from config.yaml -> training (no hyper-parameter tuning)
+  * trains on train and picks the best epoch on val (Ultralytics "best.pt"); test is never used
+  * settings come only from config.yaml -> training (no hyperparameter tuning)
   * copies best.pt to models/<tag>/fp32_checkpoint.pt and records its SHA-256
 
 Tags:
-  --tag dev   quick pipeline test (3 epochs on 10% of train). Use it to test Stages 5-8 on val
-              before the long run. Never reported.
+  --tag dev   quick pipeline test (3 epochs on 10% of train) for trying Stages 5-8 on val.
+              Never reported.
   --tag main  the real experiment (default).
 
 Usage (from the project root):
@@ -58,7 +58,7 @@ def main() -> int:
     dirs = run_dirs(cfg, args.tag)
     tcfg = cfg["training"]
 
-    # ---- gates: dataset checked, model not already frozen
+    # ---- gates: dataset checks passed and no frozen model exists yet
     checks = project_path(cfg["paths"]["results_dir"]) / "dataset" / "dataset_checks.json"
     if not checks.exists() or load_json(checks).get("overall_status") != "PASS":
         print("STOP: Stage 3 gate not passed (results/dataset/dataset_checks.json missing or not PASS).")

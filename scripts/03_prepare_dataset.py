@@ -1,14 +1,14 @@
 """Stage 3a — Download, verify and convert VisDrone2019-DET.
 
-What this script does, step by step:
+Steps:
   1. Downloads the three official archives (train / val / test-dev) from the Ultralytics asset
-     mirror and verifies each against the SHA-256 hash stored in config.yaml.
+     mirror and checks each against the SHA-256 hash in config.yaml.
   2. Extracts them into data/raw/.
   3. Converts the original VisDrone annotations into
-       * YOLO label files (used by Ultralytics for training, calibration and inference), and
-       * COCO-format JSON ground truth for val and test (used later by pycocotools for AP).
+       * YOLO label files (for training, calibration and inference), and
+       * COCO-format JSON ground truth for val and test (for AP with pycocotools).
      Both formats are produced from the SAME parsed boxes, so they cannot disagree.
-  4. Writes a dataset YAML for Ultralytics and machine-readable tables of all images/objects.
+  4. Writes a dataset YAML for Ultralytics and CSV tables of all images and objects.
 
 Annotation policy (config.yaml -> dataset.conversion), applied identically to every split:
   * VisDrone rows with score = 0 are skipped. These are "ignored regions" (category 0) and
@@ -19,7 +19,8 @@ Annotation policy (config.yaml -> dataset.conversion), applied identically to ev
 
 Usage (from the project root):
     python scripts/03_prepare_dataset.py
-    python scripts/03_prepare_dataset.py --splits val          # e.g. only one split
+    python scripts/03_prepare_dataset.py --splits val          # only one split
+    python scripts/03_prepare_dataset.py --skip-download       # reuse archives in data/raw
 Then run: python scripts/04_check_dataset.py
 """
 
@@ -204,7 +205,7 @@ def main() -> int:
         for k, v in sorted(counts.items()):
             print(f"    {k:<40s} {v}")
 
-    # Tables of all images / objects (used by 04_check_dataset.py and later for Table 2).
+    # Tables of all images / objects (read by 04_check_dataset.py and 06_build_engines.py).
     # If only some splits were converted now, rows of other splits from an earlier run are kept.
     for name, rows in (("images.csv", all_image_rows), ("objects.csv", all_object_rows)):
         path = ann_dir / name

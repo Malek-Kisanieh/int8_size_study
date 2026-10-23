@@ -1,16 +1,15 @@
 """Stage 2 — Toolchain smoke test (Gate: "INT8 export works on this machine").
 
-PURPOSE: prove that every tool in the chain works on THIS machine before we invest days in
-fine-tuning. It is a FUNCTIONAL check only. It uses the COCO-pretrained YOLOv8n and the tiny
-COCO8 dataset (4 validation images); the mAP values it prints are meaningless as results and
-must never be reported in the paper.
+Checks that the whole toolchain works on this machine before fine-tuning. This is a
+functional check only: it uses the COCO-pretrained YOLOv8n and the tiny COCO8 dataset
+(4 validation images), so the mAP values it prints are not results.
 
 Steps:
   1. Download yolov8n.pt and COCO8 to known project paths (SHA-256 verified).
   2. PyTorch FP32 validation on COCO8 (reference).
   3. Export three TensorRT engines from the same weights: FP32, FP16, INT8 (calibrated on COCO8).
      Each export runs in its own folder so the files cannot overwrite each other.
-     The Ultralytics log of each export is saved (it shows WHICH INT8 path was used).
+     The Ultralytics log of each export is saved; it shows which INT8 path was used.
   4. Load every engine, predict one image, validate on COCO8.
   5. Write results/smoke_test/smoke_test.json and print PASS / FAIL.
 
@@ -35,7 +34,7 @@ from src.common import (  # noqa: E402
     print_header, project_path, save_json, sha256_file, utc_timestamp,
 )
 
-# Log lines that reveal how Ultralytics built the INT8 engine (see utils/export/engine.py)
+# Ultralytics log lines that show how the INT8 engine was built
 INT8_EVIDENCE = [
     r"quantizing ONNX to INT8 with ModelOpt.*",          # TensorRT >= 11: explicit Q/DQ
     r"keeping \d+ head layers out of INT8.*",            # TensorRT <= 10: implicit calibration

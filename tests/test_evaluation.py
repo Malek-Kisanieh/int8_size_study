@@ -1,13 +1,13 @@
-"""Verification of src/evaluation.py against pycocotools — uses SYNTHETIC detections.
+"""Checks src/evaluation.py against pycocotools using synthetic detections.
 
 Run after Stage 3 (needs data/VisDrone/annotations/coco_gt_val.json):
     python tests/test_evaluation.py
 
-Test 1: with all image weights = 1, our AP recomputation equals pycocotools exactly (every bin).
-Test 2: for a bootstrap resample WITH duplicated images, our weighted AP equals pycocotools run on
-        a dataset in which the drawn images are physically duplicated under new ids.
-The synthetic detections (jittered ground-truth boxes + random false positives) exist only to
-exercise the code. They say nothing about any model and must never be reported.
+Test 1: with all image weights = 1, our AP equals pycocotools in every bin.
+Test 2: for a bootstrap resample with repeated images, our weighted AP equals pycocotools run on a
+        copy of the dataset in which the drawn images are duplicated under new ids.
+The synthetic detections (jittered ground-truth boxes plus random false positives) only exercise
+the code. They say nothing about any model and are not reported.
 """
 
 from __future__ import annotations
